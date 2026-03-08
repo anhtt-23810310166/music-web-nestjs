@@ -315,7 +315,7 @@ export default function SearchBar({ onSearch, placeholder = 'Tìm kiếm bài h�
             outline: 'none',
             color: 'var(--text-primary)',
             fontSize: '13px',
-            padding: '10px 52px 10px 42px',
+            padding: '10px 30px 10px 42px',
             width: '100%',
             transition: 'var(--transition)',
           }}

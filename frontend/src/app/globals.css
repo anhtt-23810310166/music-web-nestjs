@@ -214,7 +214,7 @@ input {
 
 .search-bar input {
   width: 100%;
-  padding: 10px 52px 10px 42px;
+  padding: 10px 30px 10px 42px;
   background: var(--bg-input);
   border: 1px solid var(--border);
   border-radius: var(--radius-full);
