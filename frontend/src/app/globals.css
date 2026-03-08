@@ -1337,38 +1337,48 @@ input {
     max-width: 100%;
   }
 
-  /* Grids - 4 columns on mobile instead of 2 */
+  /* Grids - 4 columns on mobile - SMALLER cards */
   .songs-grid,
   .topics-grid,
   .grid-3 {
     grid-template-columns: repeat(4, 1fr) !important;
-    gap: 10px !important;
+    gap: 8px !important;
   }
 
   .song-card {
-    border-radius: var(--radius-md);
+    border-radius: 6px;
   }
 
   .song-card-image {
     aspect-ratio: 1;
+    font-size: 28px;
   }
 
   .song-card-title {
-    font-size: 11px;
+    font-size: 10px;
+    font-weight: 500;
+    margin-bottom: 3px;
   }
 
   .song-card-artist {
-    font-size: 9px;
+    font-size: 8px;
   }
 
   .song-card-play {
-    width: 28px;
-    height: 28px;
-    font-size: 14px;
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+    bottom: 6px;
+    right: 6px;
   }
 
   .song-card-meta {
-    font-size: 9px;
+    font-size: 8px;
+    margin-top: 4px;
+  }
+
+  .song-card-info {
+    padding: 8px;
   }
 
   /* Song List */
@@ -1416,6 +1426,27 @@ input {
 
   .topic-card-count {
     font-size: 11px;
+  }
+
+  /* Playlist Create Form - Mobile */
+  .playlist-create-form {
+    flex-wrap: wrap !important;
+    padding: 12px !important;
+    gap: 8px !important;
+  }
+
+  .playlist-create-form input {
+    width: 100% !important;
+    flex: none !important;
+    padding: 8px 10px !important;
+    font-size: 13px !important;
+  }
+
+  .playlist-create-form .btn {
+    flex: 1 !important;
+    min-width: 0 !important;
+    padding: 8px 12px !important;
+    font-size: 12px !important;
   }
 
   /* Buttons */
@@ -1496,12 +1527,12 @@ input {
 }
 
 @media (max-width: 480px) {
-  /* 4 columns on very small screens too */
+  /* 4 columns - EVEN SMALLER on very small screens */
   .songs-grid,
   .topics-grid,
   .grid-3 {
     grid-template-columns: repeat(4, 1fr) !important;
-    gap: 8px !important;
+    gap: 4px !important;
   }
 
   /* Hide search bar on super small screens */
@@ -1560,30 +1591,36 @@ input {
     font-size: 12px;
   }
 
-  /* Cards - optimized for 4-column layout */
+  /* Cards - VERY SMALL for 4-column layout */
   .song-card {
-    border-radius: var(--radius-sm);
+    border-radius: 5px;
   }
 
   .song-card-title {
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 500;
+    margin-bottom: 3px;
   }
 
   .song-card-artist {
-    font-size: 8px;
+    font-size: 7px;
   }
 
   .song-card-image {
-    border-radius: var(--radius-sm);
+    border-radius: 5px;
+    font-size: 24px;
   }
 
   .song-card-play {
-    width: 24px;
-    height: 24px;
-    font-size: 12px;
-    bottom: 6px;
-    right: 6px;
+    width: 22px;
+    height: 22px;
+    font-size: 11px;
+    bottom: 4px;
+    right: 4px;
+  }
+
+  .song-card-info {
+    padding: 6px;
   }
 
   .topic-card {
@@ -1591,11 +1628,27 @@ input {
   }
 
   .topic-card-title {
-    font-size: 10px;
+    font-size: 9px;
   }
 
   .topic-card-count {
-    font-size: 8px;
+    font-size: 7px;
+  }
+
+  /* Playlist Create Form - Very Small Mobile */
+  .playlist-create-form {
+    padding: 10px !important;
+    gap: 6px !important;
+  }
+
+  .playlist-create-form input {
+    padding: 7px 8px !important;
+    font-size: 12px !important;
+  }
+
+  .playlist-create-form .btn {
+    padding: 7px 10px !important;
+    font-size: 11px !important;
   }
 
   /* Buttons */

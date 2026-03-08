@@ -94,7 +94,7 @@ export default function PlaylistsPage() {
 
         {/* Create form */}
         {showCreate && (
-          <div style={{
+          <div className="playlist-create-form" style={{
             background: 'var(--bg-card)', border: '1px solid var(--border)',
             borderRadius: 'var(--radius-md)', padding: 20, marginBottom: 24,
             display: 'flex', gap: 12, alignItems: 'center',
@@ -114,11 +114,11 @@ export default function PlaylistsPage() {
               }}
             />
             <button className="btn btn-primary" onClick={handleCreate} disabled={creating}
-              style={{ padding: '10px 20px', fontSize: 13 }}>
+              style={{ padding: '10px 20px', fontSize: 13, whiteSpace: 'nowrap' }}>
               {creating ? 'Đang tạo...' : 'Tạo'}
             </button>
             <button className="btn btn-outline" onClick={() => { setShowCreate(false); setNewTitle(''); }}
-              style={{ padding: '10px 20px', fontSize: 13 }}>
+              style={{ padding: '10px 20px', fontSize: 13, whiteSpace: 'nowrap' }}>
               Huỷ
             </button>
           </div>
