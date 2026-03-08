@@ -1,0 +1,185 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── ENUMS ──────────────────────────────────────────────────────────
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+}
+
+// ─── MODELS ─────────────────────────────────────────────────────────
+
+model User {
+  id                   String     @id @default(uuid())
+  email                String     @unique
+  password             String
+  fullName             String
+  avatar               String?
+  phone                String?
+  role                 Role       @default(USER)
+  status               Status     @default(ACTIVE)
+  emailVerified        Boolean    @default(false)
+  emailVerificationToken String?  @unique
+  emailVerificationExpires DateTime?
+  passwordResetToken   String?    @unique
+  passwordResetExpires DateTime?
+  refreshToken         String?
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+
+  playlists            Playlist[]
+  favorites            FavoriteSong[]
+  listeningHistory     ListeningHistory[]
+
+  @@index([email])
+  @@index([emailVerificationToken])
+  @@map("users")
+}
+
+model Topic {
+  id          String   @id @default(uuid())
+  title       String   @unique
+  description String?
+  avatar      String?
+  slug        String   @unique
+  status      Status   @default(ACTIVE)
+  deleted     Boolean  @default(false)
+  position    Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  songs       Song[]
+
+  @@index([slug])
+  @@index([status])
+  @@map("topics")
+}
+
+model Singer {
+  id          String   @id @default(uuid())
+  fullName    String
+  avatar      String?
+  status      Status   @default(ACTIVE)
+  deleted     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  songs       Song[]
+
+  @@index([fullName])
+  @@index([status])
+  @@map("singers")
+}
+
+model Song {
+  id          String   @id @default(uuid())
+  title       String
+  avatar      String?
+  description String?
+  audio       String   // URL to audio file (S3/Cloudinary)
+  lyrics      String?
+  duration    Int?     // Duration in seconds
+  listenCount Int      @default(0)
+  likeCount   Int      @default(0)
+  slug        String   @unique
+  status      Status   @default(ACTIVE)
+  deleted     Boolean  @default(false)
+  position    Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  singerId    String?
+  singer      Singer?  @relation(fields: [singerId], references: [id])
+
+  topicId     String?
+  topic       Topic?   @relation(fields: [topicId], references: [id])
+
+  favorites        FavoriteSong[]
+  playlistSongs    PlaylistSong[]
+  listeningHistory ListeningHistory[]
+
+  @@index([singerId])
+  @@index([topicId])
+  @@index([listenCount])
+  @@index([status])
+  @@index([deleted])
+  @@index([slug])
+  @@index([createdAt])
+  @@map("songs")
+}
+
+model FavoriteSong {
+  id        String   @id @default(uuid())
+  userId    String
+  songId    String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  song      Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, songId])
+  @@map("favorite_songs")
+}
+
+model Playlist {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  avatar      String?
+  isPublic    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  songs       PlaylistSong[]
+
+  @@index([userId])
+  @@map("playlists")
+}
+
+model PlaylistSong {
+  id         String   @id @default(uuid())
+  position   Int      @default(0)
+  addedAt    DateTime @default(now())
+
+  playlistId String
+  playlist   Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+
+  songId     String
+  song       Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@unique([playlistId, songId])
+  @@map("playlist_songs")
+}
+
+model ListeningHistory {
+  id        String   @id @default(uuid())
+  userId    String
+  songId    String
+  playedAt  DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  song      Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([songId])
+  @@index([playedAt])
+  @@map("listening_history")
+}

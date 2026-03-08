@@ -1,0 +1,53 @@
+# Dependencies
+node_modules
+npm-debug.log
+
+# Environment variables
+.env
+.env.*
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+
+# Build output
+dist
+build
+
+# Frontend
+frontend
+frontend/node_modules
+frontend/.next
+frontend/out
+
+# Testing
+test
+coverage
+*.spec.ts
+*.test.ts
+
+# Documentation
+README.md
+SETUP_GUIDE.md
+*.md
+
+# Docker
+docker-compose.yml
+Dockerfile
+.dockerignore
+
+# Misc
+.prettierrc
+eslint.config.mjs
+tsconfig.build.json
+start-all.bat
+stop-all.bat
+check_users.ts
+
+# OS
+.DS_Store
+Thumbs.db
