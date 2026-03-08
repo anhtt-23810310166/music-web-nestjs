@@ -276,7 +276,7 @@ export default function SearchBar({ onSearch, placeholder = 'Tìm kiếm bài h�
           title="Tìm kiếm bằng giọng nói"
           style={{
             position: 'absolute',
-            right: '48px',
+            right: '12px',
             top: '50%',
             transform: 'translateY(-50%)',
             background: 'none',
@@ -315,7 +315,7 @@ export default function SearchBar({ onSearch, placeholder = 'Tìm kiếm bài h�
             outline: 'none',
             color: 'var(--text-primary)',
             fontSize: '13px',
-            padding: '10px 30px 10px 42px',
+            padding: '10px 42px 10px 42px',
             width: '100%',
             transition: 'var(--transition)',
           }}
