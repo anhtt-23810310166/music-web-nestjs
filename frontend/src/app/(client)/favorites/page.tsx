@@ -1,11 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { useEffect, useState } from 'react';
 import { favoritesApi } from '@/lib/api';
 import { usePlayer } from '@/context/PlayerContext';
+import Link from 'next/link';
 
 function getToken() { return localStorage.getItem('accessToken') || ''; }
+
+function formatListens(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(0)}K`;
+  return n.toString();
+}
+
+function formatDuration(s?: number): string {
+  if (!s) return '--:--';
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${m}:${sec.toString().padStart(2, '0')}`;
+}
 
 export default function FavoritesPage() {
   const [songs, setSongs] = useState<any[]>([]);
@@ -53,16 +68,16 @@ export default function FavoritesPage() {
             Đăng nhập để xem danh sách bài hát yêu thích của bạn và đồng bộ trên mọi thiết bị.
           </p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-            <a href="/login">
+            <Link href="/login">
               <button className="btn btn-primary" style={{ padding: '10px 28px', fontSize: 14, fontWeight: 600 }}>
                 Đăng nhập
               </button>
-            </a>
-            <a href="/register">
+            </Link>
+            <Link href="/register">
               <button className="btn btn-outline" style={{ padding: '10px 28px', fontSize: 14, fontWeight: 600 }}>
                 Đăng ký
               </button>
-            </a>
+            </Link>
           </div>
         </div>
       </div>
@@ -92,36 +107,48 @@ export default function FavoritesPage() {
               return (
                 <div
                   key={song.id}
-                  className={`song-item ${isActive ? 'song-item-active' : ''}`}
+                  className="song-list-item"
                   onClick={() => { setPlaylist(songs); play(song); }}
-                  style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '12px 16px', borderRadius: 'var(--radius-md)', cursor: 'pointer', transition: 'var(--transition)' }}
+                  style={{ 
+                    background: isActive ? 'rgba(233, 69, 96, 0.1)' : 'transparent',
+                    paddingLeft: '16px',
+                  }}
                 >
-                  <span style={{ width: 30, textAlign: 'center', fontSize: 13, color: 'var(--text-muted)', flexShrink: 0 }}>
+                  <span className={`song-list-rank ${i < 3 ? 'top-3' : ''}`}>
                     {isActive && isPlaying ? <i className="bx bx-equalizer bx-tada" style={{ color: 'var(--accent)' }}></i> : i + 1}
                   </span>
-                  <div style={{ width: 44, height: 44, borderRadius: 'var(--radius-sm)', background: 'var(--gradient-card)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <div className="song-list-img">
                     {song.avatar ? (
-                      <img src={song.avatar} alt={song.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <img src={song.avatar} alt={song.title} />
                     ) : (
-                      <i className="bx bxs-music" style={{ color: 'var(--text-muted)' }}></i>
+                      <i className="bx bxs-music"></i>
                     )}
                   </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 600, fontSize: 14, color: isActive ? 'var(--accent)' : 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <div className="song-list-info">
+                    <div className="song-list-title" style={{ color: isActive ? 'var(--accent)' : 'inherit' }}>
                       {song.title}
                     </div>
-                    <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 }}>
-                      {song.singer?.fullName || 'Unknown'}
+                    <div className="song-list-artist">
+                      <Link href={`/singer/${song.singer?.id}`} onClick={(e) => e.stopPropagation()}>
+                        {song.singer?.fullName || 'Unknown'}
+                      </Link>
                     </div>
                   </div>
-                  <button
-                    className="player-btn player-btn-fav"
-                    onClick={(e) => { e.stopPropagation(); handleRemove(song.id); }}
-                    title="Bỏ yêu thích"
-                    style={{ fontSize: 18 }}
-                  >
-                    <i className="bx bxs-heart"></i>
-                  </button>
+                  
+                  <div className="song-list-stats">
+                    ▶ {formatListens(song.listenCount || 0)}
+                  </div>
+                  
+                  <div className="song-list-duration">
+                    <button
+                      className="player-btn player-btn-fav"
+                      onClick={(e) => { e.stopPropagation(); handleRemove(song.id); }}
+                      title="Bỏ yêu thích"
+                      style={{ fontSize: 18, color: '#e74c3c' }}
+                    >
+                      <i className="bx bxs-heart"></i>
+                    </button>
+                  </div>
                 </div>
               );
             })}

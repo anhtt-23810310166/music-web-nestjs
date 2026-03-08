@@ -13,11 +13,18 @@ function formatListens(n: number): string {
   return n.toString();
 }
 
+function formatDuration(s?: number): string {
+  if (!s) return '--:--';
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${m}:${sec.toString().padStart(2, '0')}`;
+}
+
 export default function ExplorePage() {
   const [topics, setTopics] = useState<any[]>([]);
   const [topSongs, setTopSongs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const { play, setPlaylist } = usePlayer();
+  const { play, setPlaylist, currentSong, isPlaying } = usePlayer();
 
   useEffect(() => {
     async function load() {
@@ -70,33 +77,47 @@ export default function ExplorePage() {
         <div className="section-header">
           <h2 className="section-title">Tất cả bài hát phổ biến</h2>
         </div>
-        <div className="songs-grid">
-          {topSongs.map((song: any) => (
-            <div
-              key={song.id}
-              className="song-card"
-              onClick={() => {
-                setPlaylist(topSongs);
-                play(song);
-              }}
-            >
-              <div className="song-card-image">
-                {song.avatar ? <img src={song.avatar} alt="" /> : ''}
-                <div className="song-card-play">▶</div>
-              </div>
-              <div className="song-card-info">
-                <div className="song-card-title">{song.title}</div>
-                <div className="song-card-artist">
-                  <Link href={`/singer/${song.singer?.id}`} onClick={(e) => e.stopPropagation()}>
-                    {song.singer?.fullName || 'Unknown'}
-                  </Link>
+        <div className="song-list">
+          {topSongs.map((song: any, i: number) => {
+            const isActive = currentSong?.id === song.id;
+            return (
+              <div
+                key={song.id}
+                className="song-list-item"
+                onClick={() => {
+                  setPlaylist(topSongs);
+                  play(song);
+                }}
+                style={{ 
+                  background: isActive ? 'rgba(233, 69, 96, 0.1)' : 'transparent',
+                  paddingLeft: '16px',
+                }}
+              >
+                <div className={`song-list-rank ${i < 3 ? 'top-3' : ''}`} style={{ color: isActive ? 'var(--accent)' : 'inherit' }}>
+                   {isActive && isPlaying ? <i className="bx bx-equalizer bx-tada" style={{ color: 'var(--accent)' }}></i> : i + 1}
                 </div>
-                <div className="song-card-meta">
-                  <span>▶ {formatListens(song.listenCount)}</span>
+                <div className="song-list-img">
+                  {song.avatar ? <img src={song.avatar} alt="" /> : <i className="bx bxs-music"></i>}
+                </div>
+                <div className="song-list-info">
+                  <div className="song-list-title" style={{ color: isActive ? 'var(--accent)' : 'inherit', fontWeight: isActive ? '700' : '500' }}>
+                    {song.title}
+                  </div>
+                  <div className="song-list-artist">
+                    <Link href={`/singer/${song.singer?.id}`} onClick={(e) => e.stopPropagation()}>
+                      {song.singer?.fullName || 'Unknown'}
+                    </Link>
+                  </div>
+                </div>
+                <div className="song-list-stats">
+                  ▶ {formatListens(song.listenCount)}
+                </div>
+                <div className="song-list-duration">
+                  {formatDuration(song.duration)}
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
     </div>

@@ -9,6 +9,7 @@ const navItems = [
   { href: '/explore', icon: <i className="bx bx-compass"></i>, label: 'Khám phá' },
   { href: '/trending', icon: <i className="bx bxs-flame"></i>, label: 'Trending' },
   { href: '/new-releases', icon: <i className="bx bx-star"></i>, label: 'Mới phát hành' },
+  { href: '/singer', icon: <i className="bx bx-microphone"></i>, label: 'Nghệ sĩ' },
 ];
 
 const libraryItems = [

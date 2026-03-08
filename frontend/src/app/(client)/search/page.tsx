@@ -3,16 +3,24 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { songsApi, singersApi } from '@/lib/api';
 import { usePlayer } from '@/context/PlayerContext';
 import { Suspense } from 'react';
 import SearchBar from '@/components/SearchBar';
+import Link from 'next/link';
 
 function formatListens(n: number): string {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
   if (n >= 1_000) return `${(n / 1_000).toFixed(0)}K`;
   return n.toString();
+}
+
+function formatDuration(s?: number): string {
+  if (!s) return '--:--';
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${m}:${sec.toString().padStart(2, '0')}`;
 }
 
 // Highlight matching text
@@ -41,12 +49,13 @@ function highlightText(text: string, query: string): React.ReactNode {
 
 function SearchContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const q = searchParams.get('q') || '';
   
   const [songs, setSongs] = useState<any[]>([]);
   const [singers, setSingers] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const { play, setPlaylist } = usePlayer();
+  const { play, setPlaylist, currentSong, isPlaying } = usePlayer();
 
   useEffect(() => {
     if (!q) {
@@ -104,7 +113,7 @@ function SearchContent() {
     <div className="fade-in">
       <section className="section">
         <div className="section-header">
-          <h1 className="section-title">Kết quả tìm kiếm cho: &quot;{q}&quot;</h1>
+          <h1 className="section-title">Kết quả: &quot;{q}&quot;</h1>
           <div style={{ width: 300 }}>
             <SearchBar />
           </div>
@@ -114,68 +123,92 @@ function SearchContent() {
           <div className="loading"><div className="spinner"></div></div>
         ) : (
           <>
-            {/* Singers Results */}
+            {/* Singers Results - SQUARE GRID */}
             {singers?.length > 0 && (
               <div style={{ marginBottom: 40 }}>
                 <h2 className="section-title" style={{ fontSize: 18, marginBottom: 16 }}>Nghệ sĩ</h2>
-                <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+                <div className="songs-grid"> 
                   {singers.map((s) => (
-                    <div key={s.id} style={{ 
-                      width: 140, textAlign: 'center', 
-                      background: 'var(--bg-card)', padding: 16, 
-                      borderRadius: 'var(--radius-md)', border: '1px solid var(--border)',
-                      cursor: 'pointer', transition: 'var(--transition)'
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-4px)')}
-                    onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}>
-                      <div style={{
-                        width: 100, height: 100, borderRadius: '50%',
-                        margin: '0 auto 12px', overflow: 'hidden',
-                        background: 'var(--gradient-card)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center'
-                      }}>
+                    <Link key={s.id} href={`/singer/${s.id}`} className="song-card" style={{ background: 'none', border: 'none' }}>
+                      <div className="song-card-image" style={{ borderRadius: 'var(--radius-lg)', aspectRatio: '1/1', width: '100%' }}>
                         {s.avatar ? (
-                          <img src={s.avatar} alt={s.fullName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          <img src={s.avatar} alt={s.fullName} style={{ borderRadius: 'var(--radius-lg)', width: '100%', height: '100%', objectFit: 'cover' }} />
                         ) : (
-                          <i className="bx bxs-user" style={{ fontSize: 40, color: 'var(--text-muted)' }}></i>
+                          <div style={{ width: '100%', height: '100%', background: 'var(--gradient-card)', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 'var(--radius-lg)' }}>
+                            <i className="bx bxs-user" style={{ fontSize: 40, color: 'var(--text-muted)' }}></i>
+                          </div>
                         )}
+                        <div style={{
+                          position: 'absolute',
+                          bottom: 0, left: 0, right: 0,
+                          padding: '10px',
+                          background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)',
+                          color: 'white',
+                          fontSize: '13px',
+                          fontWeight: '600',
+                          textAlign: 'center',
+                          opacity: 0,
+                          transition: 'var(--transition)'
+                        }} className="singer-name-overlay">
+                          {s.fullName}
+                        </div>
                       </div>
-                      <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {highlightText(s.fullName, q)}
-                      </h3>
-                    </div>
+                      <style jsx>{`
+                        .song-card:hover .singer-name-overlay {
+                          opacity: 1;
+                        }
+                      `}</style>
+                    </Link>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Songs Results */}
+            {/* Songs Results - LIST FORMAT with ACTIVE state */}
             <div>
               <h2 className="section-title" style={{ fontSize: 18, marginBottom: 16 }}>Bài hát</h2>
               {songs?.length > 0 ? (
-                <div className="songs-grid">
-                  {songs.map((song: any) => (
-                    <div
-                      key={song.id}
-                      className="song-card"
-                      onClick={() => {
-                        setPlaylist(songs);
-                        play(song);
-                      }}
-                    >
-                      <div className="song-card-image">
-                        {song.avatar ? <img src={song.avatar} alt={song.title} /> : ''}
-                        <div className="song-card-play">▶</div>
-                      </div>
-                      <div className="song-card-info">
-                        <div className="song-card-title">{highlightText(song.title, q)}</div>
-                        <div className="song-card-artist">{highlightText(song.singer?.fullName || 'Unknown', q)}</div>
-                        <div className="song-card-meta">
-                          <span>▶ {formatListens(song.listenCount || 0)}</span>
+                <div className="song-list">
+                  {songs.map((song: any, i: number) => {
+                    const isActive = currentSong?.id === song.id;
+                    return (
+                      <div
+                        key={song.id}
+                        className="song-list-item"
+                        onClick={() => {
+                          setPlaylist(songs);
+                          play(song);
+                        }}
+                        style={{ 
+                          background: isActive ? 'rgba(233, 69, 96, 0.1)' : 'transparent',
+                          paddingLeft: '16px',
+                        }}
+                      >
+                        <div className="song-list-rank" style={{ color: isActive ? 'var(--accent)' : 'inherit' }}>
+                           {isActive && isPlaying ? <i className="bx bx-equalizer bx-tada" style={{ color: 'var(--accent)' }}></i> : i + 1}
+                        </div>
+                        <div className="song-list-img">
+                          {song.avatar ? <img src={song.avatar} alt={song.title} /> : <i className="bx bxs-music"></i>}
+                        </div>
+                        <div className="song-list-info">
+                          <div className="song-list-title" style={{ color: isActive ? 'var(--accent)' : 'inherit', fontWeight: isActive ? '700' : '500' }}>
+                            {highlightText(song.title, q)}
+                          </div>
+                          <div className="song-list-artist">
+                            <Link href={`/singer/${song.singer?.id}`} onClick={(e) => e.stopPropagation()}>
+                              {highlightText(song.singer?.fullName || 'Unknown', q)}
+                            </Link>
+                          </div>
+                        </div>
+                        <div className="song-list-stats">
+                          ▶ {formatListens(song.listenCount || 0)}
+                        </div>
+                        <div className="song-list-duration">
+                          {formatDuration(song.duration)}
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <div style={{ color: 'var(--text-secondary)', padding: 20 }}>
@@ -184,7 +217,7 @@ function SearchContent() {
               )}
             </div>
             
-            {songs?.length === 0 && singers?.length === 0 && (
+            {songs?.length === 0 && (singers?.length === 0 || !singers) && (
               <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-muted)' }}>
                 Không tìm thấy kết quả nào. Hãy thử từ khoá khác.
               </div>

@@ -13,6 +13,13 @@ function formatListens(n: number): string {
   return n.toString();
 }
 
+function formatDuration(s?: number): string {
+  if (!s) return '--:--';
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${m}:${sec.toString().padStart(2, '0')}`;
+}
+
 export default function SingerDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -20,7 +27,7 @@ export default function SingerDetailPage() {
   const [singer, setSinger] = useState<any>(null);
   const [songs, setSongs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const { play, setPlaylist } = usePlayer();
+  const { play, setPlaylist, currentSong, isPlaying } = usePlayer();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,7 +37,6 @@ export default function SingerDetailPage() {
           songsApi.getBySinger(id),
         ]);
         setSinger(singerData);
-        // Correctly handle paginated response from songsApi.getBySinger
         setSongs(songsData?.data || (Array.isArray(songsData) ? songsData : []));
       } catch (err) {
         console.error('Error fetching singer details:', err);
@@ -46,22 +52,22 @@ export default function SingerDetailPage() {
 
   return (
     <div className="fade-in">
-      {/* Follow existing style from TopicPage */}
+      {/* Banner with Square Avatar Trend */}
       <div className="hero-banner" style={{ marginBottom: 32, padding: '40px', display: 'flex', gap: '32px', alignItems: 'center' }}>
         <div style={{ 
-          width: '160px', 
-          height: '160px', 
-          borderRadius: '50%', 
+          width: '180px', 
+          height: '180px', 
+          borderRadius: 'var(--radius-xl)', 
           overflow: 'hidden', 
           flexShrink: 0,
-          border: '4px solid rgba(255,255,255,0.1)',
+          border: '1px solid var(--border)',
           boxShadow: '0 8px 32px rgba(0,0,0,0.3)'
         }}>
           {singer.avatar ? (
             <img src={singer.avatar} alt={singer.fullName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           ) : (
             <div style={{ width: '100%', height: '100%', background: 'var(--gradient-card)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <i className="bx bxs-user" style={{ fontSize: '64px', color: 'var(--text-muted)' }}></i>
+              <i className="bx bxs-user" style={{ fontSize: '72px', color: 'var(--text-muted)' }}></i>
             </div>
           )}
         </div>
@@ -77,7 +83,7 @@ export default function SingerDetailPage() {
               style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
             >
               <i className="bx bx-play" style={{ fontSize: '20px' }}></i>
-              Phát tất cả ({songs.length} bài)
+              Phát tất cả
             </button>
           )}
         </div>
@@ -85,35 +91,52 @@ export default function SingerDetailPage() {
 
       <section className="section">
         <div className="section-header">
-          <h2 className="section-title">Tất cả bài hát</h2>
+          <h2 className="section-title">Danh sách bài hát</h2>
         </div>
-        <div className="songs-grid">
-          {songs.map((song: any) => (
-            <div
-              key={song.id}
-              className="song-card"
-              onClick={() => { 
-                setPlaylist(songs); 
-                play(song); 
-              }}
-            >
-              <div className="song-card-image">
-                {song.avatar ? <img src={song.avatar} alt="" /> : ''}
-                <div className="song-card-play">▶</div>
-              </div>
-              <div className="song-card-info">
-                <div className="song-card-title">{song.title}</div>
-                <div className="song-card-artist">{singer.fullName}</div>
-                <div className="song-card-meta">
-                  <span>▶ {formatListens(song.listenCount || 0)}</span>
+        
+        {/* Songs as LIST format with Enhanced ACTIVE state */}
+        <div className="song-list">
+          {songs.map((song: any, i: number) => {
+             const isActive = currentSong?.id === song.id;
+             return (
+              <div
+                key={song.id}
+                className="song-list-item"
+                onClick={() => { setPlaylist(songs); play(song); }}
+                style={{ 
+                  background: isActive ? 'rgba(233, 69, 96, 0.1)' : 'transparent',
+                  paddingLeft: '16px',
+                  boxShadow: isActive ? 'inset 0 0 10px rgba(233, 69, 96, 0.05)' : 'none'
+                }}
+              >
+                <div className={`song-list-rank ${i < 3 ? 'top-3' : ''}`} style={{ color: isActive ? 'var(--accent)' : 'inherit' }}>
+                  {isActive && isPlaying ? <i className="bx bx-equalizer bx-tada" style={{ color: 'var(--accent)' }}></i> : i + 1}
+                </div>
+                <div className="song-list-img">
+                  {song.avatar ? <img src={song.avatar} alt="" /> : <i className="bx bxs-music"></i>}
+                </div>
+                <div className="song-list-info">
+                  <div className="song-list-title" style={{ color: isActive ? 'var(--accent)' : 'inherit', fontWeight: isActive ? '700' : '500' }}>
+                    {song.title}
+                  </div>
+                  <div className="song-list-artist">
+                    {singer.fullName}
+                  </div>
+                </div>
+                <div className="song-list-stats">
+                  ▶ {formatListens(song.listenCount || 0)}
+                </div>
+                <div className="song-list-duration">
+                  {formatDuration(song.duration)}
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
+
         {songs.length === 0 && (
           <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
-            Chưa có bài hát nào từ ca sĩ này.
+            Chưa có bài hát nào từ nghệ sĩ này.
           </div>
         )}
       </section>
