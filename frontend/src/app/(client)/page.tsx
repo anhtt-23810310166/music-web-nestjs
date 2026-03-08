@@ -70,8 +70,8 @@ export default function HomePage() {
         setTopSongsPage(nextPage);
         setTopSongsHasMore(res.meta.page < res.meta.totalPages);
       }
-    } catch (error) {
-      error && console.error('Failed to load more top songs');
+    } catch (e) {
+      console.error('Failed to load more top songs', e);
     } finally {
       setLoadingMore(false);
     }

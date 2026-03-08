@@ -73,7 +73,7 @@ function SearchContent() {
         setSongs(songsRes.data || songsRes);
         setSingers(singersRes.data || singersRes);
       } catch (e) {
-        error && console.error('Search error');
+        console.error('Search error:', e);
       } finally {
         setLoading(false);
       }

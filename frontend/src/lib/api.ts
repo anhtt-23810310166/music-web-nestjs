@@ -25,8 +25,13 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
   }
 
   try {
-    console.log(`[API Request] ${method} ${API_URL}${endpoint}`);
     const res = await fetch(`${API_URL}${endpoint}`, config);
+
+    // Nếu hết hạn (401), logout ngay lập tức
+    if (res.status === 401) {
+      handleSessionExpired();
+      throw new Error('Session expired');
+    }
 
     if (!res.ok) {
       const error = await res.json().catch(() => ({ message: 'Network error' }));
@@ -35,9 +40,17 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
 
     return res.json();
   } catch (error: any) {
+    if (error.message === 'Session expired') throw error;
     console.error(`[API Error] ${method} ${endpoint}:`, error);
     throw new Error(error.message || 'Network error or Server unreachable');
   }
+}
+
+function handleSessionExpired() {
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('refreshToken');
+  localStorage.removeItem('adminUser');
+  window.dispatchEvent(new CustomEvent('session-expired'));
 }
 
 // ─── Auth ──────────────────────────────────────────────────
@@ -49,6 +62,8 @@ export const authApi = {
     }),
   register: (data: { email: string; password: string; fullName: string }) =>
     request<any>('/auth/register', { method: 'POST', body: data }),
+  logout: (token: string) =>
+    request<any>('/auth/logout', { method: 'POST', token }),
   initFirstAdmin: (data: { email: string; password: string; fullName: string }) =>
     request<any>('/auth/init', { method: 'POST', body: data }),
 };
@@ -126,24 +141,15 @@ export const playlistsApi = {
 // ─── Upload ────────────────────────────────────────────────
 async function uploadToCloudinary(file: File, folder: string, token: string) {
   try {
-    console.log(`[API Request] Upload Signature: GET ${API_URL}/upload/signature?folder=${folder}`);
-    // 1. Lấy chữ ký từ server
     const sigRes = await fetch(`${API_URL}/upload/signature?folder=${folder}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    if (!sigRes.ok) {
-      const errorData = await sigRes.json().catch(() => ({}));
-      throw new Error(errorData.message || 'Failed to get upload signature');
-    }
+    if (!sigRes.ok) throw new Error('Failed to get signature');
 
     const { signature, timestamp, cloudName, apiKey } = await sigRes.json();
-    console.log(`[API Request] Cloudinary Upload Config:`, { cloudName, apiKey, timestamp, folder });
     const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`;
-    console.log(`[API Request] Cloudinary URL: ${cloudinaryUrl}`);
-    console.log(`[API Request] File: ${file.name}, size: ${(file.size / 1024 / 1024).toFixed(2)}MB, type: ${file.type}`);
 
-    // 2. Upload thẳng lên Cloudinary
     const formData = new FormData();
     formData.append('file', file);
     formData.append('api_key', apiKey);
@@ -151,16 +157,8 @@ async function uploadToCloudinary(file: File, folder: string, token: string) {
     formData.append('signature', signature);
     formData.append('folder', folder);
 
-    const cloudRes = await fetch(cloudinaryUrl, {
-      method: 'POST',
-      body: formData,
-      mode: 'cors',
-    });
-
-    if (!cloudRes.ok) {
-      const err = await cloudRes.json().catch(() => ({ error: { message: 'Cloudinary upload failed' } }));
-      throw new Error(err.error?.message || 'Cloudinary upload failed');
-    }
+    const cloudRes = await fetch(cloudinaryUrl, { method: 'POST', body: formData });
+    if (!cloudRes.ok) throw new Error('Cloudinary failed');
 
     const data = await cloudRes.json();
 
@@ -176,7 +174,6 @@ async function uploadToCloudinary(file: File, folder: string, token: string) {
       },
     };
   } catch (error: any) {
-    console.error(`[API Error] Upload to ${folder}:`, error);
     throw new Error(error.message || 'Upload failed');
   }
 }
@@ -185,4 +182,3 @@ export const uploadApi = {
   image: (file: File, token: string) => uploadToCloudinary(file, 'music-app/images', token),
   audio: (file: File, token: string) => uploadToCloudinary(file, 'music-app/audio', token),
 };
-

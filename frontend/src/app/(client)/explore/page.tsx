@@ -37,7 +37,7 @@ export default function ExplorePage() {
         // Handle paginated response: top.data
         setTopSongs(top?.data || (Array.isArray(top) ? top : []));
       } catch (e) {
-        error && console.error('Explore error');
+        console.error('Explore error:', e);
       } finally {
         setLoading(false);
       }
