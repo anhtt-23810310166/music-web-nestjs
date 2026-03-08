@@ -3,10 +3,10 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import SearchBar from '@/components/SearchBar';
 
 export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }) {
   const [loggedIn, setLoggedIn] = useState(false);
-  const [keyword, setKeyword] = useState('');
   const router = useRouter();
 
   useEffect(() => {
@@ -21,14 +21,7 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
     localStorage.removeItem('refreshToken');
     window.dispatchEvent(new Event('auth-change'));
     setLoggedIn(false);
-    router.refresh(); // Refresh to clear specific protected parts
-  };
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (keyword.trim()) {
-      router.push(`/search?q=${encodeURIComponent(keyword.trim())}`);
-    }
+    router.refresh();
   };
 
   return (
@@ -41,17 +34,7 @@ export default function Header({ toggleSidebar }: { toggleSidebar?: () => void }
         >
           <i className="bx bx-menu"></i>
         </button>
-        <form className="search-bar" onSubmit={handleSearch} style={{ display: 'flex', alignItems: 'center' }}>
-          <button type="submit" style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex' }}>
-            <i className="bx bx-search search-icon"></i>
-          </button>
-          <input
-            type="text"
-            placeholder="Tìm kiếm bài hát, nghệ sĩ..."
-            value={keyword}
-            onChange={(e) => setKeyword(e.target.value)}
-          />
-        </form>
+        <SearchBar />
       </div>
       <div className="header-actions">
         {loggedIn ? (

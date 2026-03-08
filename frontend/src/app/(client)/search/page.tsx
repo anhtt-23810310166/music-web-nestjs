@@ -7,11 +7,36 @@ import { useSearchParams } from 'next/navigation';
 import { songsApi, singersApi } from '@/lib/api';
 import { usePlayer } from '@/context/PlayerContext';
 import { Suspense } from 'react';
+import SearchBar from '@/components/SearchBar';
 
 function formatListens(n: number): string {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
   if (n >= 1_000) return `${(n / 1_000).toFixed(0)}K`;
   return n.toString();
+}
+
+// Highlight matching text
+function highlightText(text: string, query: string): React.ReactNode {
+  if (!query.trim()) return text;
+  
+  const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+  const parts = text.split(regex);
+  
+  return parts.map((part, i) => 
+    regex.test(part) ? (
+      <mark key={i} style={{ 
+        background: 'rgba(233, 69, 96, 0.3)', 
+        color: 'var(--accent-hover)',
+        padding: '0 2px',
+        borderRadius: '2px',
+        fontWeight: 600,
+      }}>
+        {part}
+      </mark>
+    ) : (
+      part
+    )
+  );
 }
 
 function SearchContent() {
@@ -61,10 +86,15 @@ function SearchContent() {
     return (
       <div className="fade-in">
         <section className="section" style={{ textAlign: 'center', padding: '60px 0' }}>
-          <i className="bx bx-search" style={{ fontSize: 64, color: 'var(--text-muted)' }}></i>
-          <h2 style={{ fontSize: 20, color: 'var(--text-secondary)', marginTop: 16 }}>
-            Nhập từ khoá để tìm kiếm bài hát, nghệ sĩ...
-          </h2>
+          <div style={{ maxWidth: 500, margin: '0 auto' }}>
+            <i className="bx bx-search" style={{ fontSize: 64, color: 'var(--text-muted)' }}></i>
+            <h2 style={{ fontSize: 20, color: 'var(--text-secondary)', marginTop: 16 }}>
+              Nhập từ khoá để tìm kiếm bài hát, nghệ sĩ...
+            </h2>
+            <div style={{ marginTop: 24 }}>
+              <SearchBar />
+            </div>
+          </div>
         </section>
       </div>
     );
@@ -75,6 +105,9 @@ function SearchContent() {
       <section className="section">
         <div className="section-header">
           <h1 className="section-title">Kết quả tìm kiếm cho: &quot;{q}&quot;</h1>
+          <div style={{ width: 300 }}>
+            <SearchBar />
+          </div>
         </div>
 
         {loading ? (
@@ -95,8 +128,8 @@ function SearchContent() {
                     }}
                     onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-4px)')}
                     onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}>
-                      <div style={{ 
-                        width: 100, height: 100, borderRadius: '50%', 
+                      <div style={{
+                        width: 100, height: 100, borderRadius: '50%',
                         margin: '0 auto 12px', overflow: 'hidden',
                         background: 'var(--gradient-card)',
                         display: 'flex', alignItems: 'center', justifyContent: 'center'
@@ -107,7 +140,9 @@ function SearchContent() {
                           <i className="bx bxs-user" style={{ fontSize: 40, color: 'var(--text-muted)' }}></i>
                         )}
                       </div>
-                      <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.fullName}</h3>
+                      <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {highlightText(s.fullName, q)}
+                      </h3>
                     </div>
                   ))}
                 </div>
@@ -133,8 +168,8 @@ function SearchContent() {
                         <div className="song-card-play">▶</div>
                       </div>
                       <div className="song-card-info">
-                        <div className="song-card-title">{song.title}</div>
-                        <div className="song-card-artist">{song.singer?.fullName || 'Unknown'}</div>
+                        <div className="song-card-title">{highlightText(song.title, q)}</div>
+                        <div className="song-card-artist">{highlightText(song.singer?.fullName || 'Unknown', q)}</div>
                         <div className="song-card-meta">
                           <span>▶ {formatListens(song.listenCount || 0)}</span>
                         </div>
