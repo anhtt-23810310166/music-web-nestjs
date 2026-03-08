@@ -38,7 +38,7 @@ RUN npm ci --only=production
 RUN npx prisma generate
 
 # Copy built application
-COPY --from=builder ./dist ./dist
+COPY --from=builder /app/dist ./dist
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs
