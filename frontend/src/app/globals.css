@@ -1247,7 +1247,7 @@ input {
 
   .search-bar input {
     padding: 8px 12px 8px 36px;
-    font-size: 13px;
+    font-size: 12px;
   }
 
   /* Content */
@@ -1257,40 +1257,71 @@ input {
   }
 
   .section-title {
-    font-size: 18px;
+    font-size: 20px;
   }
 
-  /* Player - Smaller on mobile */
+  /* Player - Compact on mobile */
   .player {
     left: 0;
-    padding: 0 12px;
-    height: 70px;
+    padding: 0 8px;
+    height: 75px;
     bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 5px;
   }
 
   .player-song {
-    width: 140px;
+    width: 100px;
+    gap: 8px;
   }
 
   .player-img {
-    width: 45px;
-    height: 45px;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+  }
+
+  .player-song-info {
+    flex: 1;
+    min-width: 0;
   }
 
   .player-song-title {
-    font-size: 12px;
+    font-size: 11px;
   }
 
   .player-song-artist {
-    font-size: 10px;
+    display: none;
   }
 
   .player-controls {
-    gap: 4px;
+    flex: 1;
+    min-width: 0;
+    gap: 2px;
   }
 
   .player-buttons {
-    gap: 16px;
+    gap: 12px;
+  }
+
+  /* Progress bar stuck to top of player on mobile */
+  .player-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 0;
+    max-width: none;
+  }
+
+  .player-time {
+    display: none;
+  }
+
+  .progress-bar {
+    height: 2px;
+    border-radius: 0;
   }
 
   .player-btn {
@@ -1299,37 +1330,26 @@ input {
   }
 
   .player-btn-play {
-    width: 35px;
-    height: 35px;
+    width: 32px;
+    height: 32px;
     font-size: 18px;
-  }
-
-  .player-progress {
-    max-width: 100%;
-  }
-
-  .player-time {
-    font-size: 10px;
-    width: 35px;
-  }
-
-  .progress-bar {
-    height: 3px;
   }
 
   .player-extra {
     display: flex;
-    gap: 12px;
+    align-items: center;
+    gap: 10px;
+    padding-right: 5px;
   }
 
   .volume-control {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
   }
 
   .volume-slider {
-    width: 60px;
+    width: 45px;
     height: 3px;
   }
 
@@ -1385,7 +1405,7 @@ input {
   }
 
   .song-card-meta {
-    font-size: 8px;
+    font-size: 10px;
     margin-top: 4px;
   }
 
@@ -1433,7 +1453,7 @@ input {
   }
 
   .topic-card-title {
-    font-size: 14px;
+    font-size: 15px;
   }
 
   .topic-card-count {
@@ -1559,48 +1579,47 @@ input {
   }
 
   .player-song {
-    width: 110px;
+    width: 100px;
   }
 
   .player-img {
-    width: 40px;
-    height: 40px;
+    width: 35px;
+    height: 35px;
   }
 
   .player-song-title {
-    font-size: 11px;
+    font-size: 12px;
   }
 
   .player-song-artist {
-    font-size: 9px;
+    display: none;
   }
 
   .player-btn {
-    font-size: 14px;
+    font-size: 16px;
   }
 
   .player-btn-play {
     width: 32px;
     height: 32px;
-    font-size: 16px;
+    font-size: 18px;
   }
 
   .player-time {
-    font-size: 9px;
-    width: 30px;
+    display: none;
   }
 
   /* Smaller fonts everywhere */
   .section-title {
-    font-size: 16px;
+    font-size: 20px;
   }
 
   .hero-title {
-    font-size: 18px;
+    font-size: 32px;
   }
 
   .hero-subtitle {
-    font-size: 12px;
+    font-size: 14px;
   }
 
   /* Cards - 3-column layout */
@@ -1609,26 +1628,26 @@ input {
   }
 
   .song-card-title {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
     margin-bottom: 4px;
   }
 
   .song-card-artist {
-    font-size: 10px;
+    font-size: 11px;
   }
 
   .song-card-image {
     border-radius: 8px;
-    font-size: 30px;
+    font-size: 32px;
   }
 
   .song-card-play {
-    width: 26px;
-    height: 26px;
-    font-size: 13px;
-    bottom: 6px;
-    right: 6px;
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+    bottom: 8px;
+    right: 8px;
   }
 
   .song-card-info {
@@ -1640,7 +1659,7 @@ input {
   }
 
   .topic-card-title {
-    font-size: 14px;
+    font-size: 15px;
   }
 
   .topic-card-count {
@@ -1655,18 +1674,18 @@ input {
 
   .playlist-create-form input {
     padding: 7px 8px !important;
-    font-size: 12px !important;
+    font-size: 13px !important;
   }
 
   .playlist-create-form .btn {
     padding: 7px 10px !important;
-    font-size: 11px !important;
+    font-size: 12px !important;
   }
 
   /* Buttons */
   .btn {
     padding: 5px 12px;
-    font-size: 11px;
+    font-size: 12px;
   }
 
   /* Admin tables */
