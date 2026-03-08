@@ -115,6 +115,7 @@ input {
   flex-shrink: 0;
   position: relative;
   z-index: 10;
+  overflow-y: auto;
 }
 
 .sidebar-logo {
@@ -610,7 +611,7 @@ input {
   padding: 0 24px;
   position: fixed;
   bottom: 0;
-  left: var(--sidebar-width);
+  left: 0;
   right: 0;
   z-index: 20;
   box-shadow: var(--shadow-player);
@@ -753,39 +754,6 @@ input {
   align-items: center;
   justify-content: flex-end;
   gap: 16px;
-  opacity: 1;
-  transition: opacity 0.3s ease;
-}
-
-.player-extra:not(.visible) {
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* Expanded player view */
-.player-expanded {
-  height: 120px;
-  background: linear-gradient(180deg, var(--bg-player) 0%, rgba(15, 15, 35, 0.98) 100%);
-  border-top: 1px solid var(--accent);
-  box-shadow: 0 -8px 40px rgba(233, 69, 96, 0.2), var(--shadow-player);
-}
-
-.player-expanded .player-extra {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.player-expand-indicator {
-  color: var(--text-muted);
-  transition: transform 0.3s ease, color 0.3s ease;
-}
-
-.player-expand-indicator:hover {
-  color: var(--text-primary);
-}
-
-.player-expanded .player-expand-indicator {
-  transform: rotate(180deg);
 }
 
 .volume-control {

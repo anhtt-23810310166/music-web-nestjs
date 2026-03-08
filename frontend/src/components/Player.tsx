@@ -23,7 +23,6 @@ export default function Player() {
   const [isFav, setIsFav] = useState(false);
   const [showPlaylistMenu, setShowPlaylistMenu] = useState(false);
   const [showLyrics, setShowLyrics] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
   const [playlists, setPlaylists] = useState<any[]>([]);
   const [addingTo, setAddingTo] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -93,17 +92,8 @@ export default function Player() {
 
   const repeatActive = repeat !== 'off';
 
-  const handlePlayerClick = (e: React.MouseEvent) => {
-    // Don't expand if clicking on buttons or progress bar
-    const target = e.target as HTMLElement;
-    if (target.closest('.player-btn') || target.closest('.progress-bar') || target.closest('.volume-slider')) {
-      return;
-    }
-    setIsExpanded(!isExpanded);
-  };
-
   return (
-    <div className={`player ${isExpanded ? 'player-expanded' : ''}`} onClick={handlePlayerClick}>
+    <div className="player">
       {/* Song Info */}
       <div className="player-song">
         <div className="player-img">
@@ -126,12 +116,6 @@ export default function Player() {
           style={{ marginLeft: 8 }}
         >
           <i className={isFav ? 'bx bxs-heart' : 'bx bx-heart'}></i>
-        </button>
-        <button
-          className="player-btn player-expand-indicator"
-          title={isExpanded ? 'Thu gọn' : 'Mở rộng'}
-        >
-          <i className={`bx ${isExpanded ? 'bx-chevron-down' : 'bx-chevron-up'}`}></i>
         </button>
       </div>
 
@@ -189,8 +173,8 @@ export default function Player() {
         </div>
       </div>
 
-      {/* Volume + Add to playlist + Lyrics - Only show when expanded */}
-      <div className={`player-extra ${isExpanded ? 'visible' : ''}`}>
+      {/* Volume + Add to playlist + Lyrics */}
+      <div className="player-extra visible">
         {/* Lyrics button */}
         <button
           className={`player-btn ${showLyrics ? 'player-btn-active' : ''}`}
