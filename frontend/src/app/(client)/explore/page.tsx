@@ -86,7 +86,11 @@ export default function ExplorePage() {
               </div>
               <div className="song-card-info">
                 <div className="song-card-title">{song.title}</div>
-                <div className="song-card-artist">{song.singer?.fullName || 'Unknown'}</div>
+                <div className="song-card-artist">
+                  <Link href={`/singer/${song.singer?.id}`} onClick={(e) => e.stopPropagation()}>
+                    {song.singer?.fullName || 'Unknown'}
+                  </Link>
+                </div>
                 <div className="song-card-meta">
                   <span>▶ {formatListens(song.listenCount)}</span>
                 </div>

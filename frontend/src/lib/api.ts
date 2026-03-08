@@ -70,6 +70,7 @@ export const songsApi = {
   getNew: (limit = 10) => request<any[]>(`/songs/new?limit=${limit}`),
   getById: (id: string) => request<any>(`/songs/${id}`),
   getBySlug: (slug: string) => request<any>(`/songs/slug/${slug}`),
+  getBySinger: (singerId: string) => request<any>(`/songs?singerId=${singerId}`),
   listen: (id: string) => request<any>(`/songs/${id}/listen`, { method: 'PATCH' }),
   create: (data: any, token: string) =>
     request<any>('/songs', { method: 'POST', body: data, token }),

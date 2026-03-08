@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { playlistsApi } from '@/lib/api';
 import { usePlayer } from '@/context/PlayerContext';
+import Link from 'next/link';
 
 function getToken() { return localStorage.getItem('accessToken') || ''; }
 
@@ -150,7 +151,9 @@ export default function PlaylistDetailPage() {
                       {song.title}
                     </div>
                     <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 }}>
-                      {song.singer?.fullName || 'Unknown'}
+                      <Link href={`/singer/${song.singer?.id}`} onClick={(e) => e.stopPropagation()}>
+                        {song.singer?.fullName || 'Unknown'}
+                      </Link>
                     </div>
                   </div>
                   <button
