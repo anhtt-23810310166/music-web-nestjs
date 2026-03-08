@@ -1337,12 +1337,12 @@ input {
     max-width: 100%;
   }
 
-  /* Grids - 2 columns on mobile */
+  /* Grids - 4 columns on mobile instead of 2 */
   .songs-grid,
   .topics-grid,
   .grid-3 {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 12px !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 10px !important;
   }
 
   .song-card {
@@ -1354,17 +1354,21 @@ input {
   }
 
   .song-card-title {
-    font-size: 13px;
-  }
-
-  .song-card-artist {
     font-size: 11px;
   }
 
+  .song-card-artist {
+    font-size: 9px;
+  }
+
   .song-card-play {
-    width: 35px;
-    height: 35px;
-    font-size: 16px;
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+
+  .song-card-meta {
+    font-size: 9px;
   }
 
   /* Song List */
@@ -1492,11 +1496,12 @@ input {
 }
 
 @media (max-width: 480px) {
-  /* Single column on very small screens */
+  /* 4 columns on very small screens too */
   .songs-grid,
   .topics-grid,
   .grid-3 {
-    grid-template-columns: 1fr !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 8px !important;
   }
 
   /* Hide search bar on super small screens */
@@ -1555,17 +1560,42 @@ input {
     font-size: 12px;
   }
 
-  /* Cards */
+  /* Cards - optimized for 4-column layout */
+  .song-card {
+    border-radius: var(--radius-sm);
+  }
+
   .song-card-title {
-    font-size: 12px;
+    font-size: 10px;
+    font-weight: 500;
   }
 
   .song-card-artist {
-    font-size: 10px;
+    font-size: 8px;
+  }
+
+  .song-card-image {
+    border-radius: var(--radius-sm);
+  }
+
+  .song-card-play {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+    bottom: 6px;
+    right: 6px;
+  }
+
+  .topic-card {
+    padding: 8px;
   }
 
   .topic-card-title {
-    font-size: 13px;
+    font-size: 10px;
+  }
+
+  .topic-card-count {
+    font-size: 8px;
   }
 
   /* Buttons */
