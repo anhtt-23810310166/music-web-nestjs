@@ -47,8 +47,8 @@ RUN npx prisma generate
 COPY --from=builder /app/dist ./dist
 
 # Create non-root user for security
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S nestjs -u 1001
+RUN groupadd -g 1001 nodejs && \
+  useradd -u 1001 -g nodejs -s /bin/sh -m nestjs
 USER nestjs
 
 # Expose port
