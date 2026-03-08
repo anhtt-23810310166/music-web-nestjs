@@ -252,23 +252,49 @@ export default function SearchBar({ onSearch, placeholder = 'Tìm kiếm bài h�
 
   return (
     <div className={`search-bar ${className}`} ref={searchRef} style={{ position: 'relative' }}>
-      <form onSubmit={handleFormSubmit} style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-        <button 
-          type="submit" 
-          className="search-submit-btn"
-          style={{ 
-            background: 'none', 
-            border: 'none', 
-            cursor: 'pointer', 
+      <form onSubmit={handleFormSubmit} style={{ display: 'flex', alignItems: 'center', width: '100%', position: 'relative' }}>
+        {/* Search icon inside input */}
+        <i 
+          className="bx bx-search" 
+          style={{
+            position: 'absolute',
+            left: '14px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            color: 'var(--text-muted)',
+            fontSize: '16px',
+            pointerEvents: 'none',
+            zIndex: 1,
+          }}
+        />
+        
+        {/* Voice search icon inside input (right side) */}
+        <button
+          type="button"
+          className={`voice-search-btn ${isListening ? 'listening' : ''}`}
+          onClick={handleVoiceSearch}
+          title="Tìm kiếm bằng giọng nói"
+          style={{
+            position: 'absolute',
+            right: '48px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: 'var(--text-muted)',
-            transition: 'color 0.2s'
+            color: isListening ? 'var(--accent)' : 'var(--text-muted)',
+            transition: 'color 0.2s',
+            zIndex: 1,
+            padding: '4px',
           }}
         >
-          <i className="bx bx-search"></i>
+          <i className={`bx ${isListening ? 'bx-microphone-off' : 'bx-microphone'}`} style={{ fontSize: 18 }}></i>
+          {isListening && <span className="voice-indicator"></span>}
         </button>
+        
         <input
           ref={inputRef}
           type="text"
@@ -283,59 +309,17 @@ export default function SearchBar({ onSearch, placeholder = 'Tìm kiếm bài h�
           }}
           style={{
             flex: 1,
-            background: 'transparent',
-            border: 'none',
+            background: 'var(--bg-input)',
+            border: '1px solid var(--border)',
+            borderRadius: 'var(--radius-full)',
             outline: 'none',
             color: 'var(--text-primary)',
             fontSize: '13px',
-            padding: '0 8px',
+            padding: '10px 52px 10px 42px',
+            width: '100%',
+            transition: 'var(--transition)',
           }}
         />
-        {/* Voice search button */}
-        <button
-          type="button"
-          className={`voice-search-btn ${isListening ? 'listening' : ''}`}
-          onClick={handleVoiceSearch}
-          title="Tìm kiếm bằng giọng nói"
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: isListening ? 'var(--accent)' : 'var(--text-muted)',
-            transition: 'color 0.2s',
-            marginRight: '4px',
-          }}
-        >
-          <i className={`bx ${isListening ? 'bx-microphone-off' : 'bx-microphone'}`}></i>
-          {isListening && <span className="voice-indicator"></span>}
-        </button>
-        {/* Clear button */}
-        {query && (
-          <button
-            type="button"
-            onClick={() => {
-              setQuery('');
-              setSuggestions([]);
-              inputRef.current?.focus();
-            }}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'var(--text-muted)',
-              fontSize: '16px',
-              padding: '4px',
-            }}
-          >
-            <i className="bx bx-x"></i>
-          </button>
-        )}
       </form>
 
       {/* Suggestions Dropdown */}

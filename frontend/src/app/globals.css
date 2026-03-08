@@ -214,7 +214,7 @@ input {
 
 .search-bar input {
   width: 100%;
-  padding: 10px 16px 10px 42px;
+  padding: 10px 52px 10px 42px;
   background: var(--bg-input);
   border: 1px solid var(--border);
   border-radius: var(--radius-full);
@@ -232,13 +232,9 @@ input {
   box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
+.search-bar input:focus + .search-icon,
 .search-bar .search-icon {
-  position: absolute;
-  left: 14px;
-  top: 50%;
-  transform: translateY(-50%);
   color: var(--text-muted);
-  font-size: 16px;
 }
 
 /* Voice search indicator animation */
@@ -1337,7 +1333,7 @@ input {
   }
 
   .search-bar input {
-    padding: 8px 12px 8px 36px;
+    padding: 8px 48px 8px 36px;
     font-size: 12px;
   }
 
