@@ -1,6 +1,35 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+
+type AdminUser = {
+  id: string;
+  email: string;
+  fullName: string;
+  role: string;
+  createdAt?: string;
+};
+
 export default function AdminHeader({ toggleSidebar }: { toggleSidebar?: () => void }) {
+  const router = useRouter();
+  const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
+
+  useEffect(() => {
+    const adminStr = localStorage.getItem('adminUser');
+    if (adminStr) {
+      try {
+        setAdminUser(JSON.parse(adminStr));
+      } catch {
+        // ignore
+      }
+    }
+  }, []);
+
+  const handleClick = () => {
+    router.push('/admin/profile');
+  };
+
   return (
     <header className="header admin-header">
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -11,16 +40,16 @@ export default function AdminHeader({ toggleSidebar }: { toggleSidebar?: () => v
         >
           <i className="bx bx-menu"></i>
         </button>
-        <div className="search-bar">
-          <i className="bx bx-search search-icon"></i>
-          <input type="text" placeholder="Tìm kiếm trong admin..." />
-        </div>
       </div>
       <div className="header-actions">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div 
+          style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}
+          onClick={handleClick}
+          title="Xem thông tin admin"
+        >
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: 13, fontWeight: 600 }}>Administrator</div>
-            <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>admin@music.com</div>
+            <div style={{ fontSize: 13, fontWeight: 600 }}>{adminUser?.fullName || 'Administrator'}</div>
+            <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{adminUser?.email || 'admin@music.com'}</div>
           </div>
           <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
             <i className="bx bxs-user" style={{ color: 'white' }}></i>
