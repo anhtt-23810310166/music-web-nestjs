@@ -11,6 +11,7 @@ type Song = {
   avatar?: string;
   singer?: { fullName: string };
   duration?: number;
+  lyrics?: string;
 };
 
 type RepeatMode = 'off' | 'all' | 'one';
