@@ -53,7 +53,7 @@ export default function PlaylistsPage() {
     }
   };
 
-  if (!loggedIn) {
+  if (!loggedIn && !loading) {
     return (
       <div className="fade-in" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
         <div style={{ textAlign: 'center', maxWidth: 400 }}>
@@ -70,8 +70,8 @@ export default function PlaylistsPage() {
             Đăng nhập để quản lý playlist cá nhân và nghe nhạc theo danh sách của bạn.
           </p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-            <a href="/login"><button className="btn btn-primary" style={{ padding: '10px 28px', fontSize: 14, fontWeight: 600 }}>Đăng nhập</button></a>
-            <a href="/register"><button className="btn btn-outline" style={{ padding: '10px 28px', fontSize: 14, fontWeight: 600 }}>Đăng ký</button></a>
+            <Link href="/login"><button className="btn btn-primary" style={{ padding: '10px 28px', fontSize: 14, fontWeight: 600 }}>Đăng nhập</button></Link>
+            <Link href="/register"><button className="btn btn-outline" style={{ padding: '10px 28px', fontSize: 14, fontWeight: 600 }}>Đăng ký</button></Link>
           </div>
         </div>
       </div>
@@ -82,14 +82,20 @@ export default function PlaylistsPage() {
     <div className="fade-in">
       <section className="section">
         <div className="section-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <h1 className="section-title">Playlist của bạn</h1>
-          <button
-            className="btn btn-primary"
-            onClick={() => setShowCreate(true)}
-            style={{ padding: '8px 20px', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}
-          >
-            <i className="bx bx-plus"></i> Tạo playlist
-          </button>
+          {loading ? (
+            <div className="skeleton" style={{ width: '200px', height: '32px' }}></div>
+          ) : (
+            <>
+              <h1 className="section-title">Playlist của bạn</h1>
+              <button
+                className="btn btn-primary"
+                onClick={() => setShowCreate(true)}
+                style={{ padding: '8px 20px', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}
+              >
+                <i className="bx bx-plus"></i> Tạo playlist
+              </button>
+            </>
+          )}
         </div>
 
         {/* Create form */}
@@ -124,31 +130,26 @@ export default function PlaylistsPage() {
           </div>
         )}
 
-        {loading ? (
-          <div className="loading"><div className="spinner"></div></div>
-        ) : playlists.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '60px 0' }}>
-            <i className="bx bx-list-ul" style={{ fontSize: 48, color: 'var(--text-muted)', marginBottom: 16 }}></i>
-            <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>Chưa có playlist nào.</p>
-            <p style={{ color: 'var(--text-muted)', fontSize: 13, marginTop: 4 }}>Bấm "Tạo playlist" để bắt đầu!</p>
-          </div>
-        ) : (
-          <div className="grid grid-3">
-            {playlists.map((pl) => (
-              <div key={pl.id} style={{
-                background: 'var(--bg-card)', borderRadius: 'var(--radius-md)',
-                overflow: 'hidden', transition: 'var(--transition)',
-                border: '1px solid var(--border)', display: 'flex', flexDirection: 'column'
-              }}>
-                <div style={{ position: 'relative' }}>
-                  <Link href={`/playlists/${pl.id}`} style={{ display: 'block' }}>
-                    <div style={{
-                      width: '100%', aspectRatio: '16/2',
-                      background: 'linear-gradient(135deg, var(--accent), #6b46c1)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    }}>
-                      <i className="bx bx-music" style={{ fontSize: 40, color: 'rgba(255,255,255,0.5)' }}></i>
-                    </div>
+        <div className="songs-grid"> 
+          {loading ? (
+            [...Array(6)].map((_, i) => (
+              <div key={i} className="song-card" style={{ background: 'none', border: 'none' }}>
+                <div className="skeleton" style={{ width: '100%', aspectRatio: '1/1', borderRadius: 'var(--radius-lg)' }}></div>
+                <div className="skeleton" style={{ width: '70%', height: '16px', marginTop: '12px', marginInline: 'auto' }}></div>
+              </div>
+            ))
+          ) : playlists.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '60px 0', width: '100%', gridColumn: '1 / -1' }}>
+              <i className="bx bx-list-ul" style={{ fontSize: 48, color: 'var(--text-muted)', marginBottom: 16 }}></i>
+              <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>Chưa có playlist nào.</p>
+              <p style={{ color: 'var(--text-muted)', fontSize: 13, marginTop: 4 }}>Bấm "Tạo playlist" để bắt đầu!</p>
+            </div>
+          ) : (
+            playlists.map((pl) => (
+              <div key={pl.id} className="song-card">
+                <div className="song-card-image" style={{ borderRadius: 'var(--radius-lg)', background: 'linear-gradient(135deg, var(--accent), #6b46c1)' }}>
+                  <Link href={`/playlists/${pl.id}`} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <i className="bx bx-music" style={{ fontSize: 48, color: 'rgba(255,255,255,0.5)' }}></i>
                   </Link>
                   <button
                     onClick={(e) => {
@@ -164,22 +165,22 @@ export default function PlaylistsPage() {
                       cursor: 'pointer', zIndex: 10,
                     }}
                     title="Xoá playlist"
-                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(229,62,62,0.8)'}
-                    onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(0,0,0,0.5)'}
                   >
                     <i className="bx bx-trash" style={{ fontSize: 16 }}></i>
                   </button>
                 </div>
-                <Link href={`/playlists/${pl.id}`} style={{ textDecoration: 'none', color: 'inherit', padding: '14px 16px', flex: 1 }}>
-                  <h3 style={{ fontWeight: 600, fontSize: 15, marginBottom: 4 }}>{pl.title}</h3>
-                  <p style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
+                <div className="song-card-info" style={{ textAlign: 'center' }}>
+                  <Link href={`/playlists/${pl.id}`}>
+                    <div className="song-card-title">{pl.title}</div>
+                  </Link>
+                  <div className="song-card-artist">
                     {pl.songs?.length || pl._count?.songs || 0} bài hát
-                  </p>
-                </Link>
+                  </div>
+                </div>
               </div>
-            ))}
-          </div>
-        )}
+            ))
+          )}
+        </div>
       </section>
     </div>
   );

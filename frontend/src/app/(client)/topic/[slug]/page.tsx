@@ -45,67 +45,87 @@ export default function TopicPage() {
     return () => window.removeEventListener('song-listen', handleListen);
   }, [slug]);
 
-  if (loading) return <div className="loading"><div className="spinner" /></div>;
-  if (!topic) return <div className="loading">Không tìm thấy thể loại</div>;
+  if (!loading && !topic) return <div className="loading">Không tìm thấy thể loại</div>;
 
-  const songs = topic.songs || [];
+  const songs = topic?.songs || [];
 
   return (
     <div className="fade-in">
       <div className="hero-banner" style={{ marginBottom: 24, padding: '32px 40px' }}>
-        <h1 className="hero-title">{topic.title}</h1>
-        <p className="hero-subtitle">{topic.description || `Khám phá nhạc ${topic.title}`}</p>
-        {songs.length > 0 && (
-          <button
-            className="btn btn-primary"
-            onClick={() => { setPlaylist(songs); play(songs[0]); }}
-          >
-            ▶ Phát tất cả ({songs.length} bài)
-          </button>
+        {loading ? (
+          <>
+            <div className="skeleton" style={{ width: '300px', height: '40px', marginBottom: '16px' }}></div>
+            <div className="skeleton" style={{ width: '60%', height: '20px', marginBottom: '24px' }}></div>
+            <div className="skeleton" style={{ width: '150px', height: '45px', borderRadius: 'var(--radius-full)' }}></div>
+          </>
+        ) : (
+          <>
+            <h1 className="hero-title">{topic.title}</h1>
+            <p className="hero-subtitle">{topic.description || `Khám phá nhạc ${topic.title}`}</p>
+            {songs.length > 0 && (
+              <button
+                className="btn btn-primary"
+                onClick={() => { setPlaylist(songs); play(songs[0]); }}
+              >
+                ▶ Phát tất cả ({songs.length} bài)
+              </button>
+            )}
+          </>
         )}
       </div>
 
       <div className="song-list">
-        {songs.map((song: any, i: number) => {
-          const isActive = currentSong?.id === song.id;
-          return (
-            <div
-              key={song.id}
-              className="song-list-item"
-              onClick={() => { 
-                setPlaylist(songs); 
-                play(song); 
-              }}
-              style={{ 
-                background: isActive ? 'rgba(233, 69, 96, 0.1)' : 'transparent',
-                paddingLeft: '16px',
-              }}
-            >
-              <div className={`song-list-rank ${i < 3 ? 'top-3' : ''}`} style={{ color: isActive ? 'var(--accent)' : 'inherit' }}>
-                {isActive && isPlaying ? <i className="bx bx-equalizer bx-tada" style={{ color: 'var(--accent)' }}></i> : i + 1}
-              </div>
-              <div className="song-list-img">
-                {song.avatar ? <img src={song.avatar} alt="" /> : <i className="bx bxs-music"></i>}
-              </div>
-              <div className="song-list-info">
-                <div className="song-list-title" style={{ color: isActive ? 'var(--accent)' : 'inherit', fontWeight: isActive ? '700' : '500' }}>
-                  {song.title}
-                </div>
-                <div className="song-list-artist">
-                  <Link href={`/singer/${song.singer?.id}`} onClick={(e) => e.stopPropagation()}>
-                    {song.singer?.fullName || 'Unknown'}
-                  </Link>
-                </div>
-              </div>
-              <div className="song-list-stats">
-                ▶ {formatListens(song.listenCount)}
-              </div>
-              <div className="song-list-duration">
-                {formatDuration(song.duration)}
-              </div>
+        {loading ? (
+          [...Array(10)].map((_, i) => (
+            <div key={i} className="song-list-item">
+              <div className="skeleton" style={{ width: '30px', height: '20px' }}></div>
+              <div className="skeleton" style={{ width: '44px', height: '44px', borderRadius: 'var(--radius-sm)' }}></div>
+              <div style={{ flex: 1 }}><div className="skeleton" style={{ width: '40%', height: '16px' }}></div></div>
+              <div className="skeleton" style={{ width: '60px', height: '16px' }}></div>
             </div>
-          );
-        })}
+          ))
+        ) : (
+          songs.map((song: any, i: number) => {
+            const isActive = currentSong?.id === song.id;
+            return (
+              <div
+                key={song.id}
+                className="song-list-item"
+                onClick={() => { 
+                  setPlaylist(songs); 
+                  play(song); 
+                }}
+                style={{ 
+                  background: isActive ? 'rgba(233, 69, 96, 0.1)' : 'transparent',
+                  paddingLeft: '16px',
+                }}
+              >
+                <div className={`song-list-rank ${i < 3 ? 'top-3' : ''}`} style={{ color: isActive ? 'var(--accent)' : 'inherit' }}>
+                  {isActive && isPlaying ? <i className="bx bx-equalizer bx-tada" style={{ color: 'var(--accent)' }}></i> : i + 1}
+                </div>
+                <div className="song-list-img">
+                  {song.avatar ? <img src={song.avatar} alt={song.title} loading="lazy" /> : <i className="bx bxs-music"></i>}
+                </div>
+                <div className="song-list-info">
+                  <div className="song-list-title" style={{ color: isActive ? 'var(--accent)' : 'inherit', fontWeight: isActive ? '700' : '500' }}>
+                    {song.title}
+                  </div>
+                  <div className="song-list-artist">
+                    <Link href={`/singer/${song.singer?.id}`} onClick={(e) => e.stopPropagation()}>
+                      {song.singer?.fullName || 'Unknown'}
+                    </Link>
+                  </div>
+                </div>
+                <div className="song-list-stats">
+                  ▶ {formatListens(song.listenCount)}
+                </div>
+                <div className="song-list-duration">
+                  {formatDuration(song.duration)}
+                </div>
+              </div>
+            );
+          })
+        )}
       </div>
     </div>
   );

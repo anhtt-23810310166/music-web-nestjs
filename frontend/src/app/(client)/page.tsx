@@ -71,7 +71,7 @@ export default function HomePage() {
         setTopSongsHasMore(res.meta.page < res.meta.totalPages);
       }
     } catch (error) {
-      console.error('Failed to load more top songs', error);
+      error && console.error('Failed to load more top songs');
     } finally {
       setLoadingMore(false);
     }
@@ -96,106 +96,142 @@ export default function HomePage() {
     return () => window.removeEventListener('song-listen', handleListen);
   }, []);
 
-  if (loading) {
-    return (
-      <div className="loading">
-        <div className="spinner" />
-      </div>
-    );
-  }
-
   return (
     <div className="fade-in">
       {/* Hero Banner */}
       <div className="hero-banner">
-        <div className="hero-tagline">Music Streaming Platform</div>
-        <h1 className="hero-title">
-          Khám phá âm nhạc
-          <br />
-          không giới hạn
-        </h1>
-        <p className="hero-subtitle">
-          Hàng ngàn bài hát, playlist được cập nhật mỗi ngày. Nghe nhạc mọi lúc, mọi nơi.
-        </p>
-        <button
-          className="btn btn-primary"
-          onClick={() => {
-            if (topSongs.length > 0) {
-              const randomIdx = Math.floor(Math.random() * topSongs.length);
-              handlePlaySong(topSongs[randomIdx], topSongs);
-            }
-          }}
-        >
-          ▶ Phát ngẫu nhiên
-        </button>
+        {loading ? (
+          <>
+            <div className="skeleton" style={{ width: '150px', height: '14px', marginBottom: '16px' }}></div>
+            <div className="skeleton" style={{ width: '300px', height: '48px', marginBottom: '16px' }}></div>
+            <div className="skeleton" style={{ width: '80%', height: '20px', marginBottom: '8px' }}></div>
+            <div className="skeleton" style={{ width: '60%', height: '20px', marginBottom: '24px' }}></div>
+            <div className="skeleton" style={{ width: '180px', height: '45px', borderRadius: 'var(--radius-full)' }}></div>
+          </>
+        ) : (
+          <>
+            <div className="hero-tagline">Music Streaming Platform</div>
+            <h1 className="hero-title">
+              Khám phá âm nhạc
+              <br />
+              không giới hạn
+            </h1>
+            <p className="hero-subtitle">
+              Hàng ngàn bài hát, playlist được cập nhật mỗi ngày. Nghe nhạc mọi lúc, mọi nơi.
+            </p>
+            <button
+              className="btn btn-primary"
+              onClick={() => {
+                if (topSongs.length > 0) {
+                  const randomIdx = Math.floor(Math.random() * topSongs.length);
+                  handlePlaySong(topSongs[randomIdx], topSongs);
+                }
+              }}
+            >
+              ▶ Phát ngẫu nhiên
+            </button>
+          </>
+        )}
       </div>
 
       {/* Topics/Genres */}
       <section className="section">
         <div className="section-header">
-          <h2 className="section-title">Thể loại</h2>
-          <Link href="/explore" className="section-link">Xem tất cả →</Link>
+          {loading ? (
+            <div className="skeleton" style={{ width: '150px', height: '24px' }}></div>
+          ) : (
+            <>
+              <h2 className="section-title">Thể loại</h2>
+              <Link href="/explore" className="section-link">Xem tất cả →</Link>
+            </>
+          )}
         </div>
         <div className="topics-grid">
-          {topics.map((topic: any) => (
-            <Link href={`/topic/${topic.slug}`} key={topic.id}>
-              <div className="topic-card">
-                <div className="topic-card-title">{topic.title}</div>
-                <div className="topic-card-count">
-                  {topic._count?.songs || 0} bài hát
+          {loading ? (
+            [...Array(6)].map((_, i) => (
+              <div key={i} className="skeleton" style={{ height: '100px', borderRadius: 'var(--radius-lg)' }}></div>
+            ))
+          ) : (
+            topics.map((topic: any) => (
+              <Link href={`/topic/${topic.slug}`} key={topic.id}>
+                <div className="topic-card">
+                  <div className="topic-card-title">{topic.title}</div>
+                  <div className="topic-card-count">
+                    {topic._count?.songs || 0} bài hát
+                  </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            ))
+          )}
         </div>
       </section>
 
       {/* Trending */}
       <section className="section">
         <div className="section-header">
-          <h2 className="section-title">Trending</h2>
-          <Link href="/trending" className="section-link">Xem tất cả →</Link>
+          {loading ? (
+            <div className="skeleton" style={{ width: '150px', height: '24px' }}></div>
+          ) : (
+            <>
+              <h2 className="section-title">Trending</h2>
+              <Link href="/trending" className="section-link">Xem tất cả →</Link>
+            </>
+          )}
         </div>
         <div className="song-list">
-          {topSongs.map((song: any, i: number) => {
-            const isActive = currentSong?.id === song.id;
-            return (
-              <div
-                key={song.id}
-                className="song-list-item"
-                onClick={() => handlePlaySong(song, topSongs)}
-                style={{ 
-                  background: isActive ? 'rgba(233, 69, 96, 0.1)' : 'transparent',
-                  paddingLeft: '16px',
-                }}
-              >
-                <div className={`song-list-rank ${i < 3 ? 'top-3' : ''}`} style={{ color: isActive ? 'var(--accent)' : 'inherit' }}>
-                  {isActive && isPlaying ? <i className="bx bx-equalizer bx-tada" style={{ color: 'var(--accent)' }}></i> : i + 1}
+          {loading ? (
+            [...Array(5)].map((_, i) => (
+              <div key={i} className="song-list-item">
+                <div className="skeleton" style={{ width: '30px', height: '20px' }}></div>
+                <div className="skeleton" style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-sm)' }}></div>
+                <div style={{ flex: 1 }}>
+                  <div className="skeleton" style={{ width: '40%', height: '16px', marginBottom: '8px' }}></div>
+                  <div className="skeleton" style={{ width: '20%', height: '12px' }}></div>
                 </div>
-                <div className="song-list-img">
-                  {song.avatar ? <img src={song.avatar} alt="" /> : <i className="bx bxs-music"></i>}
-                </div>
-                <div className="song-list-info">
-                  <div className="song-list-title" style={{ color: isActive ? 'var(--accent)' : 'inherit', fontWeight: isActive ? '700' : '500' }}>
-                    {song.title}
-                  </div>
-                  <div className="song-list-artist">
-                    <Link href={`/singer/${song.singer?.id}`} onClick={(e) => e.stopPropagation()}>
-                      {song.singer?.fullName || 'Unknown'}
-                    </Link>
-                  </div>
-                </div>
-                <div className="song-list-stats">
-                  ▶ {formatListens(song.listenCount)}
-                </div>
-                <div className="song-list-duration">
-                  {formatDuration(song.duration)}
-                </div>
+                <div className="skeleton" style={{ width: '60px', height: '16px' }}></div>
               </div>
-            );
-          })}
+            ))
+          ) : (
+            topSongs.map((song: any, i: number) => {
+              const isActive = currentSong?.id === song.id;
+              return (
+                <div
+                  key={song.id}
+                  className="song-list-item"
+                  onClick={() => handlePlaySong(song, topSongs)}
+                  style={{ 
+                    background: isActive ? 'rgba(233, 69, 96, 0.1)' : 'transparent',
+                    paddingLeft: '16px',
+                  }}
+                >
+                  <div className={`song-list-rank ${i < 3 ? 'top-3' : ''}`} style={{ color: isActive ? 'var(--accent)' : 'inherit' }}>
+                    {isActive && isPlaying ? <i className="bx bx-equalizer bx-tada" style={{ color: 'var(--accent)' }}></i> : i + 1}
+                  </div>
+                  <div className="song-list-img">
+                    {song.avatar ? <img src={song.avatar} alt="" loading="lazy" /> : <i className="bx bxs-music"></i>}
+                  </div>
+                  <div className="song-list-info">
+                    <div className="song-list-title" style={{ color: isActive ? 'var(--accent)' : 'inherit', fontWeight: isActive ? '700' : '500' }}>
+                      {song.title}
+                    </div>
+                    <div className="song-list-artist">
+                      <Link href={`/singer/${song.singer?.id}`} onClick={(e) => e.stopPropagation()}>
+                        {song.singer?.fullName || 'Unknown'}
+                      </Link>
+                    </div>
+                  </div>
+                  <div className="song-list-stats">
+                    ▶ {formatListens(song.listenCount)}
+                  </div>
+                  <div className="song-list-duration">
+                    {formatDuration(song.duration)}
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
-        {topSongsHasMore && (
+        {!loading && topSongsHasMore && (
           <div style={{ textAlign: 'center', marginTop: '20px' }}>
             <button
               className="btn btn-outline"
@@ -209,50 +245,70 @@ export default function HomePage() {
         )}
       </section>
 
-      {/* New Releases - Changed to LIST format */}
+      {/* New Releases */}
       <section className="section">
         <div className="section-header">
-          <h2 className="section-title">Mới phát hành</h2>
-          <Link href="/new-releases" className="section-link">Xem tất cả →</Link>
+          {loading ? (
+            <div className="skeleton" style={{ width: '180px', height: '24px' }}></div>
+          ) : (
+            <>
+              <h2 className="section-title">Mới phát hành</h2>
+              <Link href="/new-releases" className="section-link">Xem tất cả →</Link>
+            </>
+          )}
         </div>
         <div className="song-list">
-          {newSongs.map((song: any, i: number) => {
-            const isActive = currentSong?.id === song.id;
-            return (
-              <div
-                key={song.id}
-                className="song-list-item"
-                onClick={() => handlePlaySong(song, newSongs)}
-                style={{ 
-                  background: isActive ? 'rgba(233, 69, 96, 0.1)' : 'transparent',
-                  paddingLeft: '16px',
-                }}
-              >
-                <div className={`song-list-rank ${i < 3 ? 'top-3' : ''}`} style={{ color: isActive ? 'var(--accent)' : 'inherit' }}>
-                  {isActive && isPlaying ? <i className="bx bx-equalizer bx-tada" style={{ color: 'var(--accent)' }}></i> : i + 1}
+          {loading ? (
+            [...Array(5)].map((_, i) => (
+              <div key={i} className="song-list-item">
+                <div className="skeleton" style={{ width: '30px', height: '20px' }}></div>
+                <div className="skeleton" style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-sm)' }}></div>
+                <div style={{ flex: 1 }}>
+                  <div className="skeleton" style={{ width: '40%', height: '16px', marginBottom: '8px' }}></div>
+                  <div className="skeleton" style={{ width: '20%', height: '12px' }}></div>
                 </div>
-                <div className="song-list-img">
-                  {song.avatar ? <img src={song.avatar} alt="" /> : <i className="bx bxs-music"></i>}
-                </div>
-                <div className="song-list-info">
-                  <div className="song-list-title" style={{ color: isActive ? 'var(--accent)' : 'inherit', fontWeight: isActive ? '700' : '500' }}>
-                    {song.title}
-                  </div>
-                  <div className="song-list-artist">
-                    <Link href={`/singer/${song.singer?.id}`} onClick={(e) => e.stopPropagation()}>
-                      {song.singer?.fullName || 'Unknown'}
-                    </Link>
-                  </div>
-                </div>
-                <div className="song-list-stats">
-                  ▶ {formatListens(song.listenCount)}
-                </div>
-                <div className="song-list-duration">
-                  {formatDuration(song.duration)}
-                </div>
+                <div className="skeleton" style={{ width: '60px', height: '16px' }}></div>
               </div>
-            );
-          })}
+            ))
+          ) : (
+            newSongs.map((song: any, i: number) => {
+              const isActive = currentSong?.id === song.id;
+              return (
+                <div
+                  key={song.id}
+                  className="song-list-item"
+                  onClick={() => handlePlaySong(song, newSongs)}
+                  style={{ 
+                    background: isActive ? 'rgba(233, 69, 96, 0.1)' : 'transparent',
+                    paddingLeft: '16px',
+                  }}
+                >
+                  <div className={`song-list-rank ${i < 3 ? 'top-3' : ''}`} style={{ color: isActive ? 'var(--accent)' : 'inherit' }}>
+                    {isActive && isPlaying ? <i className="bx bx-equalizer bx-tada" style={{ color: 'var(--accent)' }}></i> : i + 1}
+                  </div>
+                  <div className="song-list-img">
+                    {song.avatar ? <img src={song.avatar} alt="" loading="lazy" /> : <i className="bx bxs-music"></i>}
+                  </div>
+                  <div className="song-list-info">
+                    <div className="song-list-title" style={{ color: isActive ? 'var(--accent)' : 'inherit', fontWeight: isActive ? '700' : '500' }}>
+                      {song.title}
+                    </div>
+                    <div className="song-list-artist">
+                      <Link href={`/singer/${song.singer?.id}`} onClick={(e) => e.stopPropagation()}>
+                        {song.singer?.fullName || 'Unknown'}
+                      </Link>
+                    </div>
+                  </div>
+                  <div className="song-list-stats">
+                    ▶ {formatListens(song.listenCount)}
+                  </div>
+                  <div className="song-list-duration">
+                    {formatDuration(song.duration)}
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
       </section>
     </div>

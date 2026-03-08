@@ -51,7 +51,7 @@ export default function FavoritesPage() {
     } catch { /* ignore */ }
   };
 
-  if (!loggedIn) {
+  if (!loggedIn && !loading) {
     return (
       <div className="fade-in" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
         <div style={{ textAlign: 'center', maxWidth: 400 }}>
@@ -88,21 +88,37 @@ export default function FavoritesPage() {
     <div className="fade-in">
       <section className="section">
         <div className="section-header">
-          <h1 className="section-title">Bài hát yêu thích</h1>
-          <span style={{ color: 'var(--text-muted)', fontSize: 14 }}>{songs.length} bài hát</span>
+          {loading ? (
+            <div className="skeleton" style={{ width: '220px', height: '32px' }}></div>
+          ) : (
+            <>
+              <h1 className="section-title">Bài hát yêu thích</h1>
+              <span style={{ color: 'var(--text-muted)', fontSize: 14 }}>{songs.length} bài hát</span>
+            </>
+          )}
         </div>
 
-        {loading ? (
-          <div className="loading"><div className="spinner"></div></div>
-        ) : songs.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '60px 0' }}>
-            <i className="bx bx-heart" style={{ fontSize: 48, color: 'var(--text-muted)', marginBottom: 16 }}></i>
-            <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>Chưa có bài hát yêu thích nào.</p>
-            <p style={{ color: 'var(--text-muted)', fontSize: 13, marginTop: 4 }}>Nhấn nút ❤️ trên player để thêm bài hát.</p>
-          </div>
-        ) : (
-          <div className="song-list">
-            {songs.map((song, i) => {
+        <div className="song-list">
+          {loading ? (
+            [...Array(10)].map((_, i) => (
+              <div key={i} className="song-list-item">
+                <div className="skeleton" style={{ width: '30px', height: '20px' }}></div>
+                <div className="skeleton" style={{ width: '44px', height: '44px', borderRadius: 'var(--radius-sm)' }}></div>
+                <div style={{ flex: 1 }}>
+                  <div className="skeleton" style={{ width: '40%', height: '16px', marginBottom: '8px' }}></div>
+                  <div className="skeleton" style={{ width: '20%', height: '12px' }}></div>
+                </div>
+                <div className="skeleton" style={{ width: '60px', height: '16px' }}></div>
+              </div>
+            ))
+          ) : songs.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '60px 0', width: '100%' }}>
+              <i className="bx bx-heart" style={{ fontSize: 48, color: 'var(--text-muted)', marginBottom: 16 }}></i>
+              <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>Chưa có bài hát yêu thích nào.</p>
+              <p style={{ color: 'var(--text-muted)', fontSize: 13, marginTop: 4 }}>Nhấn nút ❤️ trên player để thêm bài hát.</p>
+            </div>
+          ) : (
+            songs.map((song, i) => {
               const isActive = currentSong?.id === song.id;
               return (
                 <div
@@ -119,13 +135,13 @@ export default function FavoritesPage() {
                   </span>
                   <div className="song-list-img">
                     {song.avatar ? (
-                      <img src={song.avatar} alt={song.title} />
+                      <img src={song.avatar} alt={song.title} loading="lazy" />
                     ) : (
                       <i className="bx bxs-music"></i>
                     )}
                   </div>
                   <div className="song-list-info">
-                    <div className="song-list-title" style={{ color: isActive ? 'var(--accent)' : 'inherit' }}>
+                    <div className="song-list-title" style={{ color: isActive ? 'var(--accent)' : 'inherit', fontWeight: isActive ? '700' : '500' }}>
                       {song.title}
                     </div>
                     <div className="song-list-artist">
@@ -151,9 +167,9 @@ export default function FavoritesPage() {
                   </div>
                 </div>
               );
-            })}
-          </div>
-        )}
+            })
+          )}
+        </div>
       </section>
     </div>
   );

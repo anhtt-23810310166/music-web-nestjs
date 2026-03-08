@@ -27,9 +27,10 @@ Tài liệu này quy định các tiêu chuẩn về kiến trúc, phong cách l
   - Tên bài hát: `color: var(--accent)` và `fontWeight: 700`.
   - Rank/Số thứ tự: Thay bằng `<i className="bx bx-equalizer bx-tada"></i>`.
 
-### 2.3. Routing & Naming
-- Sử dụng danh từ số ít cho các route chi tiết: `/singer/[id]`, `/topic/[slug]`, `/playlist/[id]`.
-- API Call: Luôn khai báo và sử dụng thông qua `frontend/src/lib/api.ts`.
+### 2.4. Hiệu ứng tải dữ liệu (Loading States)
+- Mọi trang danh sách và trang chi tiết phải sử dụng **Skeleton Screens** với hiệu ứng shimmer thay cho vòng xoay (spinner) truyền thống.
+- Cấu trúc Skeleton phải khớp 1:1 với layout thực tế (ví dụ: Grid nghệ sĩ thì dùng ô vuông, List bài hát thì dùng thanh ngang).
+- Sử dụng thuộc tính `loading="lazy"` cho toàn bộ thẻ `<img>` để tối ưu hiệu suất tải trang.
 
 ## 3. Quy tắc Code (Coding Standards)
 
