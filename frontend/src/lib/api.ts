@@ -167,6 +167,7 @@ async function uploadToCloudinary(file: File, folder: string, token: string) {
       message: 'Uploaded successfully',
       data: {
         url: data.secure_url,
+        secure_url: data.secure_url,
         publicId: data.public_id,
         format: data.format,
         bytes: data.bytes,
