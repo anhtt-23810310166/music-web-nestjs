@@ -6,10 +6,24 @@ type RequestOptions = {
   body?: any;
   headers?: Record<string, string>;
   token?: string;
+  skipRefresh?: boolean;
 };
 
+// Biến quản lý trạng thái refresh để tránh gọi nhiều lần cùng lúc
+let isRefreshing = false;
+let refreshSubscribers: ((token: string) => void)[] = [];
+
+function subscribeTokenRefresh(cb: (token: string) => void) {
+  refreshSubscribers.push(cb);
+}
+
+function onRefreshed(token: string) {
+  refreshSubscribers.map(cb => cb(token));
+  refreshSubscribers = [];
+}
+
 async function request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
-  const { method = 'GET', body, headers = {}, token } = options;
+  const { method = 'GET', body, headers = {}, token, skipRefresh = false } = options;
 
   const config: RequestInit = {
     method,
@@ -27,10 +41,56 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
   try {
     const res = await fetch(`${API_URL}${endpoint}`, config);
 
-    // Nếu hết hạn (401), logout ngay lập tức
-    if (res.status === 401) {
-      handleSessionExpired();
-      throw new Error('Session expired');
+    // Xử lý lỗi 401 - Có thể token đã hết hạn
+    if (res.status === 401 && !skipRefresh) {
+      const refreshToken = localStorage.getItem('refreshToken');
+      
+      if (refreshToken) {
+        if (!isRefreshing) {
+          isRefreshing = true;
+          try {
+            // Gọi API refresh âm thầm
+            const refreshRes = await fetch(`${API_URL}/auth/refresh`, {
+              method: 'POST',
+              headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}` 
+              },
+              body: JSON.stringify({ refreshToken })
+            });
+
+            if (refreshRes.ok) {
+              const data = await refreshRes.json();
+              const newAccessToken = data.accessToken;
+              const newRefreshToken = data.refreshToken;
+
+              localStorage.setItem('accessToken', newAccessToken);
+              localStorage.setItem('refreshToken', newRefreshToken);
+              
+              isRefreshing = false;
+              onRefreshed(newAccessToken);
+              
+              // Thử lại request cũ với token mới
+              return request(endpoint, { ...options, token: newAccessToken });
+            } else {
+              throw new Error('Refresh failed');
+            }
+          } catch (err) {
+            isRefreshing = false;
+            handleSessionExpired(); // Chỉ báo hết hạn khi cả refresh cũng thất bại
+            throw new Error('Session expired');
+          }
+        } else {
+          // Đang có một request khác đang refresh, đợi nó xong rồi dùng token mới
+          return new Promise((resolve) => {
+            subscribeTokenRefresh((newToken) => {
+              resolve(request(endpoint, { ...options, token: newToken }));
+            });
+          });
+        }
+      } else {
+        handleSessionExpired();
+      }
     }
 
     if (!res.ok) {
@@ -63,7 +123,7 @@ export const authApi = {
   register: (data: { email: string; password: string; fullName: string }) =>
     request<any>('/auth/register', { method: 'POST', body: data }),
   logout: (token: string) =>
-    request<any>('/auth/logout', { method: 'POST', token }),
+    request<any>('/auth/logout', { method: 'POST', token, skipRefresh: true }),
   initFirstAdmin: (data: { email: string; password: string; fullName: string }) =>
     request<any>('/auth/init', { method: 'POST', body: data }),
 };
