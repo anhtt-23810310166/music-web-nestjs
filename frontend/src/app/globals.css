@@ -1016,6 +1016,17 @@ input {
   visibility: visible;
 }
 
+/* Mobile Menu Button */
+.mobile-menu-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 8px;
+}
+
 /* ─── Lyrics Modal ─── */
 .lyrics-overlay {
   position: fixed;
@@ -1032,7 +1043,7 @@ input {
 
 .lyrics-container {
   width: 100%;
-  max-width: 600px; /* Standard modal width */
+  max-width: 600px;
   max-height: 80vh;
   background: var(--bg-card);
   border-radius: var(--radius-xl);
@@ -1093,7 +1104,7 @@ input {
   flex: 1;
   padding: 24px 32px;
   overflow-y: auto;
-  font-size: 16px; /* regular text size */
+  font-size: 16px;
   line-height: 2;
   color: var(--text-primary);
   text-align: center;
@@ -1127,23 +1138,22 @@ input {
 
 @media (max-width: 1024px) {
   :root {
-    --sidebar-width: 250px; /* Tablet also shows full sidebar to keep layout nice, or we handle it via off-canvas if we want */
+    --sidebar-width: 250px;
   }
-  
-  /* Let's redefine the 1024px break point to keep things left-aligned instead of centered */
+
   .sidebar-logo {
     padding: 0 24px 24px;
     justify-content: flex-start;
   }
   .sidebar-logo span {
-    display: block; /* Don't hide logo text */
+    display: block;
   }
   .nav-section-title {
-    display: block; /* Don't hide section titles */
+    display: block;
   }
   .nav-link {
-    flex-direction: row;        /* Side-by-side */
-    justify-content: flex-start; /* Align left */
+    flex-direction: row;
+    justify-content: flex-start;
     align-items: center;
     gap: 12px;
     padding: 11px 16px;
@@ -1194,7 +1204,6 @@ input {
     left: 0;
   }
 
-  /* When sidebar is showing, also show text that was hidden by the tablet query */
   .sidebar.show .sidebar-logo span,
   .sidebar.show .nav-link span {
     display: inline;
@@ -1222,89 +1231,381 @@ input {
     display: block;
   }
 
+  /* Header */
   .header {
     padding: 0 16px;
     height: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
   }
 
   .search-bar {
-    width: 200px;
+    width: 100%;
+    max-width: 200px;
   }
 
   .search-bar input {
     padding: 8px 12px 8px 36px;
+    font-size: 13px;
   }
 
+  /* Content */
   .content-scroll {
     padding: 16px;
     padding-bottom: calc(var(--player-height) + 16px);
   }
 
+  .section-title {
+    font-size: 18px;
+  }
+
+  /* Player - Smaller on mobile */
   .player {
     left: 0;
     padding: 0 12px;
-    height: 70px; /* smaller player on mobile */
+    height: 70px;
+    bottom: 0;
   }
 
   .player-song {
-    width: 150px;
+    width: 140px;
+  }
+
+  .player-img {
+    width: 45px;
+    height: 45px;
+  }
+
+  .player-song-title {
+    font-size: 12px;
+  }
+
+  .player-song-artist {
+    font-size: 10px;
+  }
+
+  .player-controls {
+    gap: 4px;
+  }
+
+  .player-buttons {
+    gap: 16px;
+  }
+
+  .player-btn {
+    font-size: 16px;
+    padding: 4px;
+  }
+
+  .player-btn-play {
+    width: 35px;
+    height: 35px;
+    font-size: 18px;
+  }
+
+  .player-progress {
+    max-width: 100%;
+  }
+
+  .player-time {
+    font-size: 10px;
+    width: 35px;
+  }
+
+  .progress-bar {
+    height: 3px;
   }
 
   .player-extra {
-    display: none; /* Hide volume control on very small screens */
+    display: none;
   }
 
+  /* Hero Banner */
   .hero-banner {
-    padding: 24px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .hero-tagline {
+    font-size: 10px;
   }
   .hero-title {
-    font-size: 28px;
+    font-size: 22px;
   }
   .hero-subtitle {
-    font-size: 14px;
+    font-size: 13px;
+    max-width: 100%;
   }
 
+  /* Grids - 2 columns on mobile */
   .songs-grid,
   .topics-grid,
   .grid-3 {
     grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
   }
-  
-  .lyrics-overlay {
+
+  .song-card {
+    border-radius: var(--radius-md);
+  }
+
+  .song-card-image {
+    aspect-ratio: 1;
+  }
+
+  .song-card-title {
+    font-size: 13px;
+  }
+
+  .song-card-artist {
+    font-size: 11px;
+  }
+
+  .song-card-play {
+    width: 35px;
+    height: 35px;
+    font-size: 16px;
+  }
+
+  /* Song List */
+  .song-list-item {
+    padding: 8px 12px;
+    gap: 12px;
+  }
+
+  .song-list-rank {
+    width: 24px;
+    font-size: 14px;
+  }
+
+  .song-list-img {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+
+  .song-list-title {
+    font-size: 13px;
+  }
+
+  .song-list-artist {
+    font-size: 11px;
+  }
+
+  .song-list-stats {
+    font-size: 11px;
+  }
+
+  .song-list-duration {
+    width: 35px;
+    font-size: 11px;
+  }
+
+  /* Topic Cards */
+  .topic-card {
     padding: 16px;
   }
-  
+
+  .topic-card-title {
+    font-size: 14px;
+  }
+
+  .topic-card-count {
+    font-size: 11px;
+  }
+
+  /* Buttons */
+  .btn {
+    padding: 6px 16px;
+    font-size: 12px;
+  }
+
+  /* Admin Content */
+  .admin-content {
+    padding: 16px;
+  }
+
+  /* Modal */
+  .modal-content {
+    width: 95%;
+    max-width: 400px;
+  }
+
+  .modal-header {
+    padding: 16px 20px;
+  }
+
+  .modal-title {
+    font-size: 16px;
+  }
+
+  .modal-body {
+    padding: 20px;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  /* Lyrics Modal - Mobile Optimized */
+  .lyrics-overlay {
+    padding: 0;
+  }
+
   .lyrics-container {
-    height: 90vh;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    border-radius: 0;
+    border: none;
   }
-  
+
   .lyrics-header {
-    padding: 24px;
+    padding: 16px;
   }
-  
+
   .lyrics-title {
-    font-size: 24px;
+    font-size: 18px;
   }
-  
+
+  .lyrics-artist {
+    font-size: 13px;
+  }
+
   .lyrics-content {
-    padding: 24px;
-    font-size: 20px;
+    padding: 16px;
+    font-size: 16px;
+    line-height: 1.8;
+  }
+
+  .lyrics-close {
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
   }
 }
 
 @media (max-width: 480px) {
+  /* Single column on very small screens */
   .songs-grid,
   .topics-grid,
   .grid-3 {
     grid-template-columns: 1fr !important;
   }
+
+  /* Hide search bar on super small screens */
   .search-bar {
-    display: none; /* Hide search bar on super small screens, maybe add a search icon button instead */
-  }
-  .player-song {
-    width: 120px;
-  }
-  .player-options {
     display: none;
+  }
+
+  /* Even smaller player */
+  .player {
+    height: 65px;
+    padding: 0 8px;
+  }
+
+  .player-song {
+    width: 110px;
+  }
+
+  .player-img {
+    width: 40px;
+    height: 40px;
+  }
+
+  .player-song-title {
+    font-size: 11px;
+  }
+
+  .player-song-artist {
+    font-size: 9px;
+  }
+
+  .player-btn {
+    font-size: 14px;
+  }
+
+  .player-btn-play {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+
+  .player-time {
+    font-size: 9px;
+    width: 30px;
+  }
+
+  /* Smaller fonts everywhere */
+  .section-title {
+    font-size: 16px;
+  }
+
+  .hero-title {
+    font-size: 18px;
+  }
+
+  .hero-subtitle {
+    font-size: 12px;
+  }
+
+  /* Cards */
+  .song-card-title {
+    font-size: 12px;
+  }
+
+  .song-card-artist {
+    font-size: 10px;
+  }
+
+  .topic-card-title {
+    font-size: 13px;
+  }
+
+  /* Buttons */
+  .btn {
+    padding: 5px 12px;
+    font-size: 11px;
+  }
+
+  /* Admin tables */
+  table {
+    font-size: 12px;
+  }
+
+  th, td {
+    padding: 8px !important;
+  }
+}
+
+/* Landscape mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .player {
+    height: 60px;
+  }
+
+  .player-img {
+    width: 35px;
+    height: 35px;
+  }
+
+  .player-btn-play {
+    width: 28px;
+    height: 28px;
+  }
+
+  .lyrics-container {
+    height: 100vh;
+  }
+
+  .lyrics-content {
+    font-size: 14px;
+    line-height: 1.6;
   }
 }
