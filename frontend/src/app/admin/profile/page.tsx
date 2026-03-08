@@ -40,7 +40,12 @@ export default function AdminProfilePage() {
     
     try {
       if (!adminUser) return;
-      const updatedUser: AdminUser = { ...adminUser, ...formData };
+      const updatedUser: AdminUser = { 
+        ...adminUser, 
+        ...formData,
+        id: adminUser.id,
+        role: adminUser.role 
+      };
       localStorage.setItem('adminUser', JSON.stringify(updatedUser));
       setAdminUser(updatedUser);
       setMessage({ type: 'success', text: 'Cập nhật thông tin thành công!' });
