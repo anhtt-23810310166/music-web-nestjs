@@ -53,7 +53,7 @@ export class ChartsService {
         take: skip + limit,
       });
 
-      const songIds = playCounts.map((p) => p.songId);
+      const songIds = playCounts.map((p) => p.songId as string);
 
       if (songIds.length === 0) {
         // Fallback to alltime if no recent data
@@ -73,9 +73,9 @@ export class ChartsService {
       });
 
       // Sort by play count from the period
-      const songPlayMap = new Map(playCounts.map((p) => [p.songId, p._count]));
+      const songPlayMap = new Map(playCounts.map((p) => [p.songId as string, p._count as number]));
       songs.sort(
-        (a, b) => (songPlayMap.get(b.id) || 0) - (songPlayMap.get(a.id) || 0),
+        (a, b) => ((songPlayMap.get(b.id) as number) || 0) - ((songPlayMap.get(a.id) as number) || 0),
       );
 
       const paginatedSongs = songs.slice(skip, skip + limit);
@@ -84,7 +84,7 @@ export class ChartsService {
       return {
         data: paginatedSongs.map((song) => ({
           ...song,
-          playCount: songPlayMap.get(song.id) || 0,
+          playCount: (songPlayMap.get(song.id) as number) || 0,
         })),
         meta: {
           total,
@@ -156,9 +156,11 @@ export class ChartsService {
       _count: true,
     });
 
-    const lastWeekMap = new Map(lastWeekPlays.map((p) => [p.songId, p._count]));
-    const previousWeekMap = new Map(
-      previousWeekPlays.map((p) => [p.songId, p._count]),
+    const lastWeekMap = new Map<string, number>(
+      lastWeekPlays.map((p) => [p.songId as string, p._count as number]),
+    );
+    const previousWeekMap = new Map<string, number>(
+      previousWeekPlays.map((p) => [p.songId as string, p._count as number]),
     );
 
     // Calculate growth
@@ -241,7 +243,7 @@ export class ChartsService {
     });
 
     // Get songs to map to artists
-    const songIds = [...new Set(artistPlays.map((p) => p.songId))];
+    const songIds = [...new Set(artistPlays.map((p) => p.songId as string))];
     const songs = await this.prisma.song.findMany({
       where: { id: { in: songIds } },
       select: { id: true, singerId: true },
@@ -251,11 +253,11 @@ export class ChartsService {
     const artistPlayCount = new Map<string, number>();
 
     artistPlays.forEach((play) => {
-      const artistId = songToArtistMap.get(play.songId);
+      const artistId = songToArtistMap.get(play.songId as string);
       if (artistId) {
         artistPlayCount.set(
           artistId,
-          (artistPlayCount.get(artistId) || 0) + play._count,
+          (artistPlayCount.get(artistId) || 0) + (play._count as number),
         );
       }
     });
@@ -310,21 +312,21 @@ export class ChartsService {
     });
 
     // Get songs to map to topics
-    const songIds = [...new Set(topicPlays.map((p) => p.songId))];
+    const songIds = [...new Set(topicPlays.map((p) => p.songId as string))];
     const songs = await this.prisma.song.findMany({
       where: { id: { in: songIds }, topicId: { not: null } },
       select: { id: true, topicId: true },
     });
 
-    const songToTopicMap = new Map(songs.map((s) => [s.id, s.topicId]));
+    const songToTopicMap = new Map(songs.map((s) => [s.id, s.topicId as string]));
     const topicPlayCount = new Map<string, number>();
 
     topicPlays.forEach((play) => {
-      const topicId = songToTopicMap.get(play.songId);
+      const topicId = songToTopicMap.get(play.songId as string);
       if (topicId) {
         topicPlayCount.set(
           topicId,
-          (topicPlayCount.get(topicId) || 0) + play._count,
+          (topicPlayCount.get(topicId) || 0) + (play._count as number),
         );
       }
     });

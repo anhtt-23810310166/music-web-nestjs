@@ -549,6 +549,37 @@ input {
   color: var(--accent);
 }
 
+.song-list-item:nth-child(1) .song-list-rank {
+  color: #ff2e63 !important; /* Rank 1: Dam nhat */
+  font-size: 24px !important;
+  text-shadow: 0 0 15px rgba(255, 46, 99, 0.5);
+  font-weight: 800 !important;
+}
+
+.song-list-item:nth-child(2) .song-list-rank {
+  color: #ff6289 !important; /* Rank 2 */
+  font-size: 21px !important;
+  font-weight: 700 !important;
+}
+
+.song-list-item:nth-child(3) .song-list-rank {
+  color: #ff96af !important; /* Rank 3 */
+  font-size: 19px !important;
+  font-weight: 600 !important;
+}
+
+.song-list-item:nth-child(4) .song-list-rank {
+  color: #ffcbd6 !important; /* Rank 4 */
+  font-size: 17px !important;
+  font-weight: 600 !important;
+}
+
+.song-list-item:nth-child(5) .song-list-rank {
+  color: #ffffff !important; /* Rank 5: Chuyen sang Trang */
+  font-size: 16px !important;
+  font-weight: 600 !important;
+}
+
 .song-list-img {
   width: 48px;
   height: 48px;
