@@ -1,197 +1,124 @@
-# 🎵 Music Web - NestJS Backend
+# 🎵 MusicBox - Fullstack Music Streaming Platform
 
-Backend API cho ứng dụng nghe nhạc trực tuyến xây dựng với NestJS.
+[![NestJS](https://img.shields.io/badge/backend-NestJS%2011-E0234E?style=flat-square&logo=nestjs)](https://nestjs.com/)
+[![Next.js](https://img.shields.io/badge/frontend-Next.js%2015-000000?style=flat-square&logo=nextdotjs)](https://nextjs.org/)
+[![Prisma](https://img.shields.io/badge/orm-Prisma%205-2D3748?style=flat-square&logo=prisma)](https://www.prisma.io/)
+[![PostgreSQL](https://img.shields.io/badge/database-PostgreSQL%2016-336791?style=flat-square&logo=postgresql)](https://www.postgresql.org/)
+[![Redis](https://img.shields.io/badge/cache-Redis%207-DC382D?style=flat-square&logo=redis)](https://redis.io/)
+[![TypeScript](https://img.shields.io/badge/language-TypeScript%205-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+
+MusicBox là một nền tảng nghe nhạc trực tuyến hiện đại, được xây dựng với kiến trúc hướng microservices-ready, hiệu suất cao và giao diện người dùng tối ưu.
 
 ---
 
-## 🚀 Cài Đặt Nhanh
+## 🌟 Tính Năng Nổi Bật
 
-### 1. Clone repository
-```bash
-git clone <your-repo-url>
-cd music-web-nestjs
-```
+### 🎧 Trải Nghiệm Người Dùng
+- **Phát nhạc chất lượng cao**: Trình phát nhạc mượt mà với đầy đủ tính năng (Play/Pause, Seek, Volume, Shuffle, Repeat).
+- **Quản lý danh sách phát**: Tạo và tùy chỉnh Playlists cá nhân.
+- **Yêu thích & Lịch sử**: Lưu lại các bài hát yêu thích và theo dõi lịch sử nghe nhạc.
+- **Tìm kiếm thông minh**: Tìm kiếm bài hát, ca sĩ, chủ đề nhanh chóng.
+- **Bảng xếp hạng & Xu hướng**: Cập nhật những bài hát hot nhất theo thời gian thực.
 
-### 2. Cài đặt dependencies
-```bash
-npm install
-```
+### 🛡️ Hệ Thống Backend
+- **Xác thực đa tầng**: JWT Access & Refresh Token, phân quyền người dùng và quản trị viên.
+- **Tối ưu hóa hiệu suất**: Caching với Redis, giới hạn lưu lượng (Throttling).
+- **Quản lý tệp tin**: Tích hợp Cloudinary để lưu trữ ảnh và âm thanh.
+- **Email Service**: Tự động gửi thông báo qua Nodemailer.
+- **Swagger Documentation**: Tài liệu API tự động và trực quan.
 
-### 3. Cấu hình biến môi trường
+---
+
+## 🏗️ Kiến Trúc Hệ Thống
+
+Dự án tuân thủ các tiêu chuẩn nghiêm ngặt được quy định trong `GEMINI.md`:
+
+- **Backend**: NestJS (v11), Prisma ORM, PostgreSQL.
+- **Frontend**: Next.js (App Router), React 19, Vanilla CSS (Không Tailwind).
+- **UI/UX**: Skeleton loading, lazy loading images, Boxicons.
+
+---
+
+## 🚀 Hướng Dẫn Cài Đặt
+
+### 1. Yêu Cầu Hệ Thống
+- Node.js >= 20.x
+- Docker & Docker Compose
+- Tài khoản Cloudinary (để upload file)
+
+### 2. Cấu Hình Biến Môi Trường
+
+Tại thư mục gốc (`music-web-nestjs/`):
 ```bash
 cp .env.example .env
 ```
+Cập nhật các thông số: `DATABASE_URL`, `REDIS_URL`, `JWT_SECRET`, `CLOUDINARY_*`, `EMAIL_*`.
 
-Sửa file `.env` với thông tin của bạn:
-```env
-DATABASE_URL="postgresql://user:pass@localhost:5432/music_streaming"
-REDIS_URL="redis://localhost:6379"
-JWT_ACCESS_SECRET="your-secret-key"
-JWT_REFRESH_SECRET="your-secret-key"
-CLOUDINARY_CLOUD_NAME="your-cloud-name"
-CLOUDINARY_API_KEY="your-api-key"
-CLOUDINARY_API_SECRET="your-api-secret"
-PORT=3002
-```
-
-### 4. Khởi tạo database
+### 3. Triển Khai Cơ Sở Dữ Liệu (Docker)
 ```bash
-# Option A: Dùng Docker (khuyến nghị)
 docker compose up -d
-
-# Option B: Dùng PostgreSQL có sẵn
-# Tạo database và cập nhật DATABASE_URL trong .env
 ```
 
-### 5. Setup Prisma
+### 4. Thiết Lập Backend
 ```bash
+npm install
 npx prisma generate
 npx prisma db push
-```
-
-### 6. Chạy server
-```bash
-# Development mode
+npx prisma db seed # Để khởi tạo dữ liệu mẫu
 npm run start:dev
-
-# Production mode
-npm run build
-npm run start:prod
 ```
+*API sẽ chạy tại: `http://localhost:3002/api/v1`*
 
----
-
-## 📡 Truy Cập API
-
-Sau khi server chạy:
-
-- **API Base URL**: http://localhost:3002/api/v1
-- **Swagger Docs**: http://localhost:3002/docs
-- **Health Check**: http://localhost:3002/health
-
----
-
-## 🔑 Tạo Admin Account Đầu Tiên
-
+### 5. Thiết Lập Frontend
 ```bash
-curl -X POST http://localhost:3002/api/v1/auth/init \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "admin@musicweb.com",
-    "password": "admin123",
-    "fullName": "Admin User"
-  }'
+cd frontend
+npm install
+npm run dev
 ```
+*Giao diện sẽ chạy tại: `http://localhost:3000`*
 
 ---
 
-## 📁 Cấu Trúc Project
+## 📁 Cấu Trúc Thư Mục
 
 ```
 music-web-nestjs/
-├── src/
-│   ├── auth/           # Authentication
-│   ├── users/          # User management
-│   ├── songs/          # Songs CRUD
-│   ├── singers/        # Artists
-│   ├── topics/         # Genres
-│   ├── playlists/      # Playlists
-│   ├── favorites/      # Favorites
-│   ├── charts/         # Charts & trending
-│   ├── listening-history/
-│   ├── upload/         # File upload
+├── src/                # NestJS Backend source
+│   ├── auth/           # Xác thực & Phân quyền
+│   ├── songs/          # Quản lý bài hát
+│   ├── singers/        # Quản lý nghệ sĩ
+│   ├── topics/         # Quản lý chủ đề/thể loại
+│   ├── playlists/      # Quản lý danh sách phát
+│   ├── charts/         # Thống kê & Bảng xếp hạng
 │   └── ...
-├── prisma/
-│   └── schema.prisma   # Database schema
-├── frontend/           # Next.js frontend
-├── docker-compose.yml  # Docker services
-└── package.json
+├── prisma/             # Database Schema & Seeds
+├── frontend/           # Next.js Frontend
+│   ├── src/
+│   │   ├── app/        # App Router pages
+│   │   ├── components/ # Reusable components
+│   │   └── context/    # React Context (PlayerContext...)
+│   └── public/         # Static assets
+└── docker-compose.yml  # Docker services (Postgres, Redis)
 ```
 
 ---
 
-## 🧪 Testing
+## 🛠 Lệnh CLI Hữu Ích
 
-```bash
-# Unit tests
-npm run test
-
-# E2E tests
-npm run test:e2e
-
-# Test coverage
-npm run test:cov
-```
+| Lệnh | Mô tả |
+| :--- | :--- |
+| `npm run build` | Build dự án cho production |
+| `npm run lint` | Kiểm tra và sửa lỗi coding style |
+| `npx prisma studio` | Mở giao diện quản lý database trực quan |
+| `npm run test` | Chạy unit tests |
+| `npm run test:e2e` | Chạy end-to-end tests |
 
 ---
 
-## 🛠 Commands Hữu Ích
+## 📞 Liên Hệ & Hỗ Trợ
 
-```bash
-# Build project
-npm run build
-
-# Format code
-npm run format
-
-# Lint code
-npm run lint
-
-# Generate Prisma client
-npx prisma generate
-
-# Database migrations
-npx prisma migrate dev
-npx prisma db push
-
-# Seed database (nếu có)
-npx prisma db seed
-```
+- **API Documentation**: [http://localhost:3002/docs](http://localhost:3002/docs)
+- **Health Check**: [http://localhost:3002/health](http://localhost:3002/health)
 
 ---
-
-## 📦 Tech Stack
-
-- **Framework**: NestJS 11
-- **Language**: TypeScript 5
-- **Database**: PostgreSQL 16
-- **ORM**: Prisma 5
-- **Cache**: Redis 7
-- **Auth**: JWT
-- **Storage**: Cloudinary
-
----
-
-## 🐛 Troubleshooting
-
-**Lỗi database connection:**
-```bash
-# Kiểm tra PostgreSQL đang chạy
-docker ps
-
-# Hoặc khởi động lại
-docker compose restart postgres
-```
-
-**Lỗi Prisma:**
-```bash
-npx prisma generate
-npx prisma db push
-```
-
-**Lỗi port đã sử dụng:**
-```bash
-# Đổi port trong .env
-PORT=3003
-```
-
----
-
-## 📞 Hỗ Trợ
-
-- API Docs: http://localhost:3002/docs
-- Health: http://localhost:3002/health
-
----
-
-**Made with ❤️ by MusicWeb Team**
+**Developed by MusicBox Team ❤️**
