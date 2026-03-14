@@ -55,11 +55,13 @@ function SearchContent() {
   const [singers, setSingers] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const { play, setPlaylist, currentSong, isPlaying } = usePlayer();
+  const [visibleSongs, setVisibleSongs] = useState(10);
 
   useEffect(() => {
     if (!q) {
       setSongs([]);
       setSingers([]);
+      setVisibleSongs(10);
       return;
     }
 
@@ -204,7 +206,7 @@ function SearchContent() {
               ))
             ) : (
               songs?.length > 0 ? (
-                songs.map((song: any, i: number) => {
+                songs.slice(0, visibleSongs).map((song: any, i: number) => {
                   const isActive = currentSong?.id === song.id;
                   return (
                     <div
@@ -251,6 +253,17 @@ function SearchContent() {
               )
             )}
           </div>
+          {songs.length > visibleSongs && !loading && (
+            <div style={{ textAlign: 'center', marginTop: '20px' }}>
+              <button
+                className="btn btn-outline"
+                onClick={() => setVisibleSongs(prev => prev + 10)}
+                style={{ minWidth: '120px' }}
+              >
+                Tải thêm
+              </button>
+            </div>
+          )}
         </div>
       </section>
     </div>

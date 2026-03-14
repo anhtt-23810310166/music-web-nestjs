@@ -4,29 +4,21 @@
 
 import { useEffect, useState } from 'react';
 import { songsApi } from '@/lib/api';
-import { usePlayer } from '@/context/PlayerContext';
-import Link from 'next/link';
-
-function formatListens(n: number): string {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(0)}K`;
-  return n.toString();
-}
-
-function formatDuration(s?: number): string {
-  if (!s) return '--:--';
-  const m = Math.floor(s / 60);
-  const sec = s % 60;
-  return `${m}:${sec.toString().padStart(2, '0')}`;
-}
+import SongList from '@/components/SongList';
 
 export default function NewReleasesPage() {
   const [songs, setSongs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const { play, setPlaylist, currentSong, isPlaying } = usePlayer();
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const limit = 10;
 
   useEffect(() => {
-    songsApi.getNew(20).then(setSongs).catch(console.error).finally(() => setLoading(false));
+    songsApi.getAll(`page=1&limit=${limit}`).then(res => {
+      setSongs(res.data || []);
+      setHasMore(res.meta?.page < res.meta?.totalPages);
+    }).catch(console.error).finally(() => setLoading(false));
 
     const handleListen = (e: any) => {
       const { songId } = e.detail;
@@ -36,6 +28,24 @@ export default function NewReleasesPage() {
     window.addEventListener('song-listen', handleListen);
     return () => window.removeEventListener('song-listen', handleListen);
   }, []);
+
+  const handleLoadMore = async () => {
+    if (loadingMore || !hasMore) return;
+    setLoadingMore(true);
+    try {
+      const nextPage = page + 1;
+      const res = await songsApi.getAll(`page=${nextPage}&limit=${limit}`);
+      if (res && res.data) {
+        setSongs(prev => [...prev, ...res.data]);
+        setPage(nextPage);
+        setHasMore(res.meta.page < res.meta.totalPages);
+      }
+    } catch (e) {
+      console.error('Failed to load more new songs', e);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   return (
     <div className="fade-in">
@@ -47,62 +57,13 @@ export default function NewReleasesPage() {
             <h1 className="section-title">Mới phát hành</h1>
           )}
         </div>
-        <div className="song-list">
-          {loading ? (
-            [...Array(12)].map((_, i) => (
-              <div key={i} className="song-list-item">
-                <div className="skeleton" style={{ width: '30px', height: '20px' }}></div>
-                <div className="skeleton" style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-sm)' }}></div>
-                <div style={{ flex: 1 }}>
-                  <div className="skeleton" style={{ width: '40%', height: '16px', marginBottom: '8px' }}></div>
-                  <div className="skeleton" style={{ width: '20%', height: '12px' }}></div>
-                </div>
-                <div className="skeleton" style={{ width: '60px', height: '16px' }}></div>
-              </div>
-            ))
-          ) : (
-            songs.map((song: any, i: number) => {
-              const isActive = currentSong?.id === song.id;
-              return (
-                <div
-                  key={song.id}
-                  className="song-list-item"
-                  onClick={() => { 
-                    setPlaylist(songs); 
-                    play(song); 
-                  }}
-                  style={{ 
-                    background: isActive ? 'rgba(233, 69, 96, 0.1)' : 'transparent',
-                    paddingLeft: '16px',
-                  }}
-                >
-                  <div className={`song-list-rank ${i < 3 ? 'top-3' : ''}`} style={{ color: isActive ? 'var(--accent)' : 'inherit' }}>
-                    {isActive && isPlaying ? <i className="bx bx-equalizer bx-tada" style={{ color: 'var(--accent)' }}></i> : i + 1}
-                  </div>
-                  <div className="song-list-img">
-                    {song.avatar ? <img src={song.avatar} alt="" loading="lazy" /> : <i className="bx bxs-music"></i>}
-                  </div>
-                  <div className="song-list-info">
-                    <div className="song-list-title" style={{ color: isActive ? 'var(--accent)' : 'inherit', fontWeight: isActive ? '700' : '500' }}>
-                      {song.title}
-                    </div>
-                    <div className="song-list-artist">
-                      <Link href={`/singer/${song.singer?.id}`} onClick={(e) => e.stopPropagation()}>
-                        {song.singer?.fullName || 'Unknown'}
-                      </Link>
-                    </div>
-                  </div>
-                  <div className="song-list-stats">
-                    ▶ {formatListens(song.listenCount)}
-                  </div>
-                  <div className="song-list-duration">
-                    {formatDuration(song.duration)}
-                  </div>
-                </div>
-              );
-            })
-          )}
-        </div>
+        <SongList 
+          songs={songs} 
+          loading={loading} 
+          onLoadMore={handleLoadMore}
+          hasMore={hasMore}
+          loadingMore={loadingMore}
+        />
       </section>
     </div>
   );
